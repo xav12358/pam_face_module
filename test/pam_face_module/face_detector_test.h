@@ -5,7 +5,7 @@
 #include <pam_face_module/face_detector.h>
 
 class Face_detector_test : public ::testing::Test {
-    Face_detector face_detector_;
+    FaceDetector face_detector_;
 
  public:
     Face_detector_test() {}

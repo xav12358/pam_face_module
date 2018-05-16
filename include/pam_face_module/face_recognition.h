@@ -2,10 +2,10 @@
 #define FACE_RECOGNITION_H
 
 
-class Face_recognition
+class FaceRecognition
 {
 public:
-    Face_recognition();
+    FaceRecognition();
 };
 
 #endif // FACE_RECOGNITION_H
