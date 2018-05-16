@@ -52,6 +52,8 @@ bool Face_detector::createSession() {
     }
     return false;
   }
+
+  return true;
 }
 
 void Face_detector::init(std::string const fileName) {

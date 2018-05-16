@@ -6,12 +6,19 @@
 
 class Pnet {
 
+    // Load graph.
     std::shared_ptr<TF_Graph> graph_;
     std::shared_ptr<TF_Status> status_;
-    std::shared_ptr<TF_ImportGraphDefOptions> opts_;
+
+    // Create session.
+    std::shared_ptr<TF_Session> sess_;
+
 
 public:
-  Pnet(std::shared_ptr<TF_Graph> graph);
+  Pnet(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session);
+
+private:
+  bool init();
 };
 
 #endif // PNET_H

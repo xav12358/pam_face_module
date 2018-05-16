@@ -4,6 +4,8 @@
 #include <memory>
 #include <tensorflow/c/c_api.h>
 
+#include <pam_face_module/architecture/MTCNN/pnet.h>
+
 class Face_detector {
 
     // Load graph.
