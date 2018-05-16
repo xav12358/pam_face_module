@@ -12,6 +12,8 @@
 
 class FaceDetector {
 
+    bool is_init_;
+
     // Load graph.
     std::shared_ptr<TF_Graph> graph_;
     std::shared_ptr<TF_Status> status_;
@@ -20,14 +22,13 @@ class FaceDetector {
     std::shared_ptr<TF_Session> sess_;
 
     // Architecture
-    std::shared_ptr<Pnet> Pnet_;
-    std::shared_ptr<Rnet> Rnet_;
-    std::shared_ptr<Onet> Onet_;
+    std::shared_ptr<Pnet> pnet_;
+    std::shared_ptr<Rnet> rnet_;
+    std::shared_ptr<Onet> onet_;
 
 
-public:
-  FaceDetector();
-
+public:  
+    FaceDetector(const std::string finename);
 private:
 
   /////////////
@@ -40,7 +41,7 @@ private:
   /// \brief Face_detector::init
   /// \param fileName
   ///
-  void Init(std::string const fileName);
+  bool Init(const std::string filename);
 
 
   ////////////////////

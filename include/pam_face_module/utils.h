@@ -40,5 +40,11 @@ SET_TF_DEFAULT_DELETER(SessionOptions);
 
 }  // namespace std
 
+static void nullDeallocator(void *ptr, std::size_t len, void *arg) {
+    (void)len;
+    (void)arg;
+    (void)ptr;
+}
+
 
 #endif // UTILS_H
