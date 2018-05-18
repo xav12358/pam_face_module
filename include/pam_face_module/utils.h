@@ -1,10 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <memory>
-#include <iostream>
 #include <tensorflow/c/c_api.h>
-
+#include <iostream>
+#include <memory>
+#include <vector>
 
 namespace std {
 
@@ -46,5 +46,36 @@ static void nullDeallocator(void *ptr, std::size_t len, void *arg) {
     (void)ptr;
 }
 
+struct FaceLandmark {
+    float x[5];
+    float y[5];
+};
 
-#endif // UTILS_H
+struct FaceBox {
+    float x0;
+    float y0;
+    float x1;
+    float y1;
+
+    /* confidence score */
+    float score;
+
+    /*regression scale */
+
+    float regress[4];
+
+    /* padding stuff*/
+    float px0;
+    float py0;
+    float px1;
+    float py1;
+
+    FaceLandmark landmark;
+};
+
+typedef enum { kNMS_UNION, kNMS_MIN } NMSType;
+
+void nms_boxes(std::vector<FaceBox> &input, float threshold, int type,
+               std::vector<FaceBox> &output);
+
+#endif  // UTILS_H

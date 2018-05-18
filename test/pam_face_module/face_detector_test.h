@@ -8,7 +8,7 @@ class Face_detector_test : public ::testing::Test {
     FaceDetector face_detector_;
 
  public:
-    Face_detector_test():face_detector_("/home/xavier/Desktop/developpement/Network/pam_face_module/data/graph_MTCNN.pb") {}
+    Face_detector_test():face_detector_(100,100,40,"/home/xavier/Bureau/developpement/NeuralNetwork/pam_face_module/data/graph_MTCNN.pb") {}
     ~Face_detector_test() {}
 
  protected:
