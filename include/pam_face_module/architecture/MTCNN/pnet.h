@@ -23,7 +23,7 @@ class Pnet {
     std::shared_ptr<TF_Session> sess_;
 
     // Gerenate input.
-    std::shared_ptr<uint8_t> raw_input_data_;
+    std::shared_ptr<float> raw_input_data_;
     std::shared_ptr<int64_t> raw_input_dims_;
 
     // Generate output
@@ -34,6 +34,11 @@ class Pnet {
     TF_Output run_inputs_[1];
     std::shared_ptr<TF_Tensor> input_tensor_;
     TF_Tensor *run_inputs_tensors_[1];
+
+
+    //Candidate
+    std::vector<FaceBox> final_candidate_boxes_;
+
 
  public:
     /////////////////
@@ -50,9 +55,15 @@ class Pnet {
     /// \brief Process
     /// \param u8x3_image
     ///
-    void Process(const cv::Mat &u8x3_image);
+    void Process(const cv::Mat &fx3_image);
 
- private:
+    //////////////////////
+    /// \brief final_candidate_boxes
+    /// \return
+    ///
+    std::vector<FaceBox> final_candidate_boxes() const;
+
+private:
     void FeedML(const cv::Mat &u8x3_image);
     void FetchData();
     bool Init();

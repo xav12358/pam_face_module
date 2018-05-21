@@ -15,6 +15,8 @@ class FaceDetector {
     bool is_init_;
     int height_, width_;
     int min_size_;
+    std::vector<cv::Size> stage_size_;
+
 
     // Load graph.
     std::shared_ptr<TF_Graph> graph_;
@@ -28,9 +30,18 @@ class FaceDetector {
     std::shared_ptr<Rnet> rnet_;
     std::shared_ptr<Onet> onet_;
 
+    std::vector<FaceBox> total_pnet_boxes_;
+
 public:
 
     FaceDetector(int h, int w, int min_size, const std::string finename);
+
+    //////////////////
+    /// \brief Process
+    /// \param u8x3_image
+    ///
+    void Process(cv::Mat & u8x3_image);
+
 private:
 
     //////////////////////
@@ -56,6 +67,8 @@ private:
     /// \param fileName
     ///
     bool LoadGraph(std::string const fileName);
+
+
 
     /////////////////
     /// \brief Face_detector::read_file

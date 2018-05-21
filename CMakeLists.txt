@@ -43,7 +43,7 @@ find_package(OpenCV 3.2.0 REQUIRED)
 find_package(GTest REQUIRED)
 #SET("OpenCV_DIR" "/home/xavier/opencv/opencv-3.2.0/")
 
-SET(OpenCV_LIBS  opencv_core opencv_highgui opencv_videoio opencv_imgproc )
+SET(OpenCV_LIBS  opencv_core opencv_highgui opencv_videoio opencv_imgproc opencv_imgcodecs )
 add_executable("pam_face_module_test" ${SOURCES} ${HEADERS})
 target_link_libraries("pam_face_module_test"
     "pam_face_module"
