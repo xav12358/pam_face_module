@@ -22,19 +22,19 @@ class Pnet {
     // Create session.
     std::shared_ptr<TF_Session> sess_;
 
-    // Gerenate input.
+//     Gerenate input.
     std::shared_ptr<float> raw_input_data_;
     std::shared_ptr<int64_t> raw_input_dims_;
 
-    // Generate output
-    TF_Output run_outputs_[2];
-    TF_Tensor *run_output_tensors_[2];
 
     // Prepare inputs.
     TF_Output run_inputs_[1];
     std::shared_ptr<TF_Tensor> input_tensor_;
     TF_Tensor *run_inputs_tensors_[1];
 
+    // Generate output
+    TF_Output run_outputs_[2];
+    TF_Tensor *run_output_tensors_[2];
 
     //Candidate
     std::vector<FaceBox> final_candidate_boxes_;
@@ -70,6 +70,7 @@ private:
     void GenerateBoundingBox(const float *confidence_data, int confidence_size,
                              const float *reg_data, float scale, float threshold, int feature_h,
                              int feature_w, std::vector<FaceBox> &output, bool transposed);
+
     void RunSession();
 };
 

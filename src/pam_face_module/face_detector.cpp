@@ -94,17 +94,8 @@ bool FaceDetector::LoadGraph(std::string const filename) {
   }
 }
 
-void FaceDetector::Process(cv::Mat &u8x3_image) {
-  cv::Mat fx3_image;
+void FaceDetector::ProcessP(cv::Mat &fx3_image) {
   cv::Mat fx3_image_resized;
-
-  float alpha = 0.0078125;
-  float mean = 127.5;
-
-  u8x3_image.convertTo(fx3_image, CV_32FC3);
-  fx3_image = (fx3_image - mean) * alpha;
-  fx3_image = fx3_image.t();
-
   total_pnet_boxes_.clear();
   for (int i = 0; i < stage_size_.size(); i++) {
     cv::resize(fx3_image, fx3_image_resized, stage_size_[i], 0, 0);
@@ -114,11 +105,29 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
     total_pnet_boxes_.insert(total_pnet_boxes_.end(), istage_boxes.begin(),
                              istage_boxes.end());
   }
+}
 
-  Debug("total_pnet_boxes_.size() " + std::to_string(total_pnet_boxes_.size()));
+void FaceDetector::Process(cv::Mat &u8x3_image) {
+  cv::Mat fx3_image;
+
+  float alpha = 0.0078125;
+  float mean = 127.5;
+
+  u8x3_image.convertTo(fx3_image, CV_32FC3);
+  fx3_image = (fx3_image - mean) * alpha;
+  fx3_image = fx3_image.t();
+  ////////////////////////////////////
+  //// PNET
+  ProcessP(fx3_image);
 
   std::vector<FaceBox> pnet_boxes;
   process_boxes(total_pnet_boxes_, height_, width_, pnet_boxes);
+
+  ///////////////////
+  /// RNET
+  rnet_->Process(fx3_image, pnet_boxes);
+
+  Debug("total_pnet_boxes_.size() " + std::to_string(total_pnet_boxes_.size()));
 
   for (auto f : pnet_boxes) {
     cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);

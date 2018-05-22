@@ -112,7 +112,7 @@ bool Pnet::Init() {
     raw_input_dims_.reset(new int64_t[4]{1, height_, width_, 3});
     input_tensor_.reset(
         TF_NewTensor(TF_FLOAT, raw_input_dims_.get(), 4, raw_input_data_.get(),
-                     3 * height_ * width_ * 3, &nullDeallocator, NULL),
+                     sizeof(float)* height_ * width_ * 3, &nullDeallocator, NULL),
         &TF_DeleteTensor);
 
     run_inputs_tensors_[0] = input_tensor_.get();

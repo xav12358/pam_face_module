@@ -5,6 +5,26 @@
 #include <functional>
 #include <iostream>
 
+void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
+                    int height, int width) {
+  cv::Mat resized(height, width, CV_32FC3, data_to);
+
+  cv::Mat chop_img = img(cv::Range(input_box.py0, input_box.py1),
+                         cv::Range(input_box.px0, input_box.px1));
+
+  int pad_top = std::abs(input_box.py0 - input_box.y0);
+  int pad_left = std::abs(input_box.px0 - input_box.x0);
+  int pad_bottom = std::abs(input_box.py1 - input_box.y1);
+  int pad_right = std::abs(input_box.px1 - input_box.x1);
+
+  cv::copyMakeBorder(chop_img, chop_img, pad_top, pad_bottom, pad_left,
+                     pad_right, cv::BORDER_CONSTANT, cv::Scalar(0));
+
+  cv::resize(chop_img, resized, cv::Size(width, height), 0, 0);
+}
+
+void dummy_deallocator(void *data, size_t len, void *arg) {}
+
 void nms_boxes(std::vector<FaceBox> &input, float threshold, int type_NMS,
                std::vector<FaceBox> &output) {
   std::sort(input.begin(), input.end(), [](const FaceBox &a, const FaceBox &b) {

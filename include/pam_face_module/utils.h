@@ -6,16 +6,16 @@
 #include <tensorflow/c/c_api.h>
 #include <vector>
 
+#include <opencv2/opencv.hpp>
 
-//Debug
+// Debug
 #define USEDEBUG
 
 #ifdef USEDEBUG
-#define Debug( x ) std::cout << x << std::endl;
+#define Debug(x) std::cout << x << std::endl;
 #else
-#define Debug( x )
+#define Debug(x)
 #endif
-
 
 namespace std {
 
@@ -84,6 +84,9 @@ struct FaceBox {
 
 typedef enum { kNMS_UNION, kNMS_MIN } NMSType;
 
+void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
+                    int height, int width);
+void dummy_deallocator(void *data, size_t len, void *arg);
 void nms_boxes(std::vector<FaceBox> &input, float threshold, int type,
                std::vector<FaceBox> &output);
 void regress_boxes(std::vector<FaceBox> &rects);
