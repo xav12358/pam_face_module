@@ -3,7 +3,9 @@
 
 #include <tensorflow/c/c_api.h>
 #include <memory>
+
 #include <pam_face_module/utils.h>
+
 
 class Rnet {
     bool is_init_;
@@ -28,6 +30,10 @@ class Rnet {
     TF_Output run_outputs_[2];
     TF_Tensor *run_output_tensors_[2];
 
+
+    //Candidate
+    std::vector<FaceBox> final_boxes_;
+
  public:
     //////////////////
     /// \brief Rnet
@@ -39,7 +45,11 @@ class Rnet {
     ////////////////
     ~Rnet() {}
 
-
+    ///////////////
+    /// \brief Process
+    /// \param img
+    /// \param pnet_candidates
+    ///
     void Process(cv::Mat &img, std::vector<FaceBox> & pnet_candidates);
 
 private:
