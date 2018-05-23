@@ -52,6 +52,13 @@ class Rnet {
     ///
     void Process(cv::Mat &img, std::vector<FaceBox> & pnet_candidates);
 
+
+    //////////////////////
+    /// \brief final_boxes
+    /// \return
+    ///
+    std::vector<FaceBox> final_boxes() const;
+
 private:
     ////////////////////
     /// \brief Init

@@ -1,5 +1,10 @@
 #include "pam_face_module/architecture/MTCNN/rnet.h"
 
+std::vector<FaceBox> Rnet::final_boxes() const
+{
+    return final_boxes_;
+}
+
 Rnet::Rnet(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) {
     graph_ = graph;
     sess_ = session;
@@ -50,7 +55,7 @@ void Rnet::Process(cv::Mat &img, std::vector<FaceBox> &pnet_candidates) {
     std::shared_ptr<TF_Tensor> input_tensor_;
     input_tensor_.reset(
         TF_NewTensor(TF_FLOAT, raw_input_dims_.get(), 4, input_buffer.data(),
-                     sizeof(float) * kHeight_ * kWidth_ * 3, &nullDeallocator, NULL),
+                      sizeof(float) * batch * kHeight_ * kWidth_ * 3, &nullDeallocator, NULL),
         &TF_DeleteTensor);
 
     run_inputs_tensors_[0] = input_tensor_.get();
@@ -69,6 +74,7 @@ void Rnet::Process(cv::Mat &img, std::vector<FaceBox> &pnet_candidates) {
     const float *reg_data = (const float *)(TF_TensorData(run_output_tensors_[0]));
 
     for (size_t i = 0; i < batch; i++) {
+        std::cout << "conf_data[1] " << conf_data[1] << std::endl;
         if (conf_data[1] > kThreshold) {
             FaceBox output_box;
             FaceBox &input_box = pnet_candidates[i];
@@ -85,10 +91,19 @@ void Rnet::Process(cv::Mat &img, std::vector<FaceBox> &pnet_candidates) {
             output_box.regress[2] = reg_data[3];
             output_box.regress[3] = reg_data[2];
             final_boxes_.push_back(output_box);
+            std::cout << " reg_data add"
+                      << reg_data[0]
+                         << reg_data[1]
+                            << reg_data[2]
+                               << reg_data[3]
+                               << std::endl;
         }
         conf_data += 2;
         reg_data += 4;
     }
+
+    Debug( "Rnet::Process final " + std::to_string(final_boxes_.size()));
+
 
     TF_DeleteTensor(run_output_tensors_[0]);
     TF_DeleteTensor(run_output_tensors_[1]);

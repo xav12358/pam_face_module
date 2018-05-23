@@ -123,11 +123,7 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
   std::vector<FaceBox> pnet_boxes;
   process_boxes(total_pnet_boxes_, height_, width_, pnet_boxes);
 
-  ///////////////////
-  /// RNET
-  rnet_->Process(fx3_image, pnet_boxes);
-
-  Debug("total_pnet_boxes_.size() " + std::to_string(total_pnet_boxes_.size()));
+  Debug("pnet_boxes pnet_boxes pnet_boxes " + std::to_string(total_pnet_boxes_.size()));
 
   for (auto f : pnet_boxes) {
     cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
@@ -135,9 +131,33 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
     Debug("px0 " + std::to_string(f.px0) + " px1 " + std::to_string(f.px1) +
           " py0 " + std::to_string(f.py0) + " py1 " + std::to_string(f.py1));
   }
-
+  cv::namedWindow("rects ",cv::WINDOW_NORMAL);
   cv::imshow("rects ", u8x3_image.t());
   cv::waitKey(-1);
+  ///////////////////
+  /// RNET
+  rnet_->Process(fx3_image, pnet_boxes);
+  std::vector<FaceBox> total_rnet_boxes = rnet_->final_boxes();
+  std::vector<FaceBox> rnet_boxes;
+  process_boxes(total_rnet_boxes,height_,width_,rnet_boxes);
+
+  std::cout << "rnet_boxes.ize " << rnet_boxes.size() << std::endl;
+  Debug("RRRRRRRRRRRRnet");
+  for (auto f : rnet_boxes) {
+    cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+    cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
+    Debug("px0 " + std::to_string(f.px0) + " px1 " + std::to_string(f.px1) +
+          " py0 " + std::to_string(f.py0) + " py1 " + std::to_string(f.py1));
+  }
+  cv::namedWindow("rects ",cv::WINDOW_NORMAL);
+  cv::imshow("rects ", u8x3_image.t());
+  cv::waitKey(-1);
+//  ///////////////////
+//  /// ONET
+//  onet_->Process(fx3_image, total_rnet_boxes);
+
+//  Debug("total_pnet_boxes_.size() " + std::to_string(total_pnet_boxes_.size()));
+
 }
 
 static void free_buffer(void *data, std::size_t length) {
