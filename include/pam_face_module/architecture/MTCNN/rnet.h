@@ -4,18 +4,11 @@
 #include <tensorflow/c/c_api.h>
 #include <memory>
 
+#include <pam_face_module/architecture/MTCNN/net.h>
 #include <pam_face_module/utils.h>
 
 
-class Rnet {
-    bool is_init_;
-
-    // Load graph.
-    std::shared_ptr<TF_Graph> graph_;
-    std::shared_ptr<TF_Status> status_;
-
-    // Create session.
-    std::shared_ptr<TF_Session> sess_;
+class Rnet : public Net{
 
     ///
     const int kHeight_ = 24;

@@ -5,22 +5,16 @@
 #include <memory>
 #include <opencv2/opencv.hpp>
 
+#include <pam_face_module/architecture/MTCNN/net.h>
 #include <pam_face_module/utils.h>
 
-class Pnet {
-    bool is_init_;
+class Pnet: public Net {
 
     // Current stage feature
     int height_, width_;
     float scale_;
     const float kPnetThreshold = 0.6f;
 
-    // Load graph.
-    std::shared_ptr<TF_Graph> graph_;
-    std::shared_ptr<TF_Status> status_;
-
-    // Create session.
-    std::shared_ptr<TF_Session> sess_;
 
 //     Gerenate input.
     std::shared_ptr<float> raw_input_data_;
@@ -66,7 +60,7 @@ class Pnet {
 private:
     void FeedML(const cv::Mat &u8x3_image);
     void FetchData();
-    bool Init();
+    virtual bool Init();
     void GenerateBoundingBox(const float *confidence_data, int confidence_size,
                              const float *reg_data, float scale, float threshold, int feature_h,
                              int feature_w, std::vector<FaceBox> &output, bool transposed);

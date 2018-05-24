@@ -14,9 +14,9 @@
 
 TEST_F(Face_detector_test, process) {
   cv::Mat input_image =
-      cv::imread("../pam_face_module/data/Face1.jpg");
+      cv::imread("../pam_face_module/data/Face2.jpeg");
 
-//  cv::resize(input_image, input_image, cv::Size(160, 120), 0, 0);
+//  cv::resize(input_image, input_image, cv::Size(480, 640), 0, 0);
   cv::namedWindow("tt", cv::WINDOW_NORMAL);
   cv::imshow("tt", input_image);
   cv::waitKey(-1);

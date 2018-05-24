@@ -5,17 +5,10 @@
 #include <memory>
 #include <vector>
 
+#include <pam_face_module/architecture/MTCNN/net.h>
 #include <pam_face_module/utils.h>
 
-class Onet {
-    bool is_init_;
-
-    // Load graph.
-    std::shared_ptr<TF_Graph> graph_;
-    std::shared_ptr<TF_Status> status_;
-
-    // Create session.
-    std::shared_ptr<TF_Session> sess_;
+class Onet :public Net{
 
     ///
     const int kHeight_ = 48;
@@ -52,12 +45,18 @@ class Onet {
     ///
     void Process(cv::Mat &img, std::vector<FaceBox> & rnet_candidates);
 
+    ///////////////
+    /// \brief final_boxes
+    /// \return
+    ///
+    std::vector<FaceBox> final_boxes() const;
+
 private:
     ///////////////////
     /// \brief Init
     /// \return
     ///
-    bool Init();
+    virtual bool Init();
 };
 
 #endif  // ONET_H

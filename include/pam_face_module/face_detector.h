@@ -29,7 +29,11 @@ class FaceDetector {
   std::shared_ptr<Rnet> rnet_;
   std::shared_ptr<Onet> onet_;
 
+  // Initial box position for each part
   std::vector<FaceBox> total_pnet_boxes_;
+  std::vector<FaceBox> total_rnet_boxes_;
+  std::vector<FaceBox> total_onet_boxes_;
+  std::vector<FaceBox> face_list_;
 
 public:
   FaceDetector(int h, int w, int min_size, const std::string finename);
