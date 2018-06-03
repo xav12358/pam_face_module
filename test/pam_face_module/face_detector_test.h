@@ -1,17 +1,15 @@
 #ifndef FACE_DETECTOR_TEST_H
 #define FACE_DETECTOR_TEST_H
 
+#include <memory>
 #include <gtest/gtest.h>
 #include <pam_face_module/face_detector.h>
 
 class Face_detector_test : public ::testing::Test {
 
-//    FaceDetector face_detector_;
  public:
+    std::unique_ptr< FaceDetector> face_detector_;
 
-
-//    Face_detector_test():face_detector_(100,100,40,"/home/xavier/Bureau/developpement/NeuralNetwork/pam_face_module/data/graph_MTCNN.pb") {}
-//    Face_detector_test():face_detector_(100,100,40,"/home/xavier/Desktop/developpement/Network/pam_face_module/data/graph_MTCNN.pb"){}
     Face_detector_test(){}
 
     ~Face_detector_test() {}

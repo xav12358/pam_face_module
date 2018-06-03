@@ -1,13 +1,15 @@
-#ifndef FACE_RECOGNITION_TEST_H
-#define FACE_RECOGNITION_TEST_H
+#ifndef ALIGNER_TEST_H
+#define ALIGNER_TEST_H
 
 #include <gtest/gtest.h>
-#include <pam_face_module/face_recognition.h>
+#include <pam_face_module/aligner.h>
 
-class Face_recognition_test : public ::testing::Test {
+class Aligner_test : public ::testing::Test {
 
 public:
-  Face_recognition_test() {}
+  std::unique_ptr<Aligner> aligner_;
+
+  Aligner_test() {}
 
 protected:
   void SetUp() {
@@ -20,4 +22,4 @@ protected:
   }
 };
 
-#endif // FACE_RECOGNITION_TEST_H
+#endif // ALIGNER_TEST_H
