@@ -2,9 +2,8 @@
 
 #include <iostream>
 
-FaceDetector::FaceDetector(int h, int w, int min_size, std::string const finename)
+FaceDetector::FaceDetector(int h, int w, int min_size)
     : height_(h), width_(w), min_size_(min_size) {
-    is_init_ = Init(finename);
 }
 
 bool FaceDetector::CreateArchitecture() {
@@ -69,6 +68,9 @@ bool FaceDetector::Init(std::string const filename) {
 
     // Create the MTCNN's architecture
     CreateArchitecture();
+
+    // indicate if init is made
+    is_init_ = ret;
 }
 
 bool FaceDetector::LoadGraph(std::string const filename) {

@@ -15,12 +15,19 @@ class Aligner {
     std::vector<cv::Mat> dewarped_images_;
 
 
-    Transformation findTransform(const std::vector<cv::Point2f> input_features,
-                                 const std::vector<cv::Point2f> output_features);
 
 public:
   Aligner() {}
 
+
+  //////////////////////
+  /// \brief findTransform fibd transforma between input_features and output_features
+  /// \param input_features
+  /// \param output_features
+  /// \return
+  ///
+  Transformation FindTransform(const std::vector<cv::Point2f> input_features,
+                               const std::vector<cv::Point2f> output_features);
   ///////////////////
   /// \brief ProcessExtractFeatures Extract features transfrmation for each facebox
   /// \param image_size

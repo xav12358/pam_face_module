@@ -17,7 +17,7 @@ std::vector<cv::Mat> Aligner::dewarped_images() const {
 }
 
 Transformation
-Aligner::findTransform(const std::vector<cv::Point2f> input_features,
+Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
                        const std::vector<cv::Point2f> output_features) {
   Eigen::Matrix2f cov = Eigen::Matrix2f::Zero(2, 2);
 
@@ -112,7 +112,7 @@ void Aligner::ProcessExtractFeatures(
   // Extract transformation from the reference landmarks positions
   image_transformations_.clear();
   for (auto l : landmarks) {
-    image_transformations_.push_back(findTransform(input_features, l));
+    image_transformations_.push_back(FindTransform(input_features, l));
   }
 }
 

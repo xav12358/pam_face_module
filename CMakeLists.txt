@@ -23,11 +23,11 @@ project("pam_face_module")
 
 add_definitions("-std=c++11")
 
-file(GLOB_RECURSE SOURCES "src/*.cpp" "src/pam_face_module/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp" "src/pam_face_module/*.cpp" "test/*.cpp" "test/pam_face_module/*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.h" "include/pam_face_module/*.h")
 add_library("pam_face_module" ${SOURCES} ${HEADERS})
 target_include_directories(
-   "pam_face_module" PUBLIC "include")
+   "pam_face_module" PUBLIC "include" "test")
 
 target_link_libraries("pam_face_module" ${OpenCV_LIBRARIES}
    "${CMAKE_CURRENT_LIST_DIR}/lib/tensorflow/libtensorflow.so"
