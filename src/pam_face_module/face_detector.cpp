@@ -4,6 +4,7 @@
 
 FaceDetector::FaceDetector(int h, int w, int min_size)
     : height_(h), width_(w), min_size_(min_size) {
+    status_.reset(TF_NewStatus(), std::default_delete<TF_Status>());
 }
 
 bool FaceDetector::CreateArchitecture() {
@@ -78,7 +79,6 @@ bool FaceDetector::LoadGraph(std::string const filename) {
     {
         std::shared_ptr<TF_Buffer> graph_def = ReadFile(filename.c_str());
         graph_.reset(TF_NewGraph(), std::default_delete<TF_Graph>());
-        status_.reset(TF_NewStatus(), std::default_delete<TF_Status>());
         std::shared_ptr<TF_ImportGraphDefOptions> opts;
         opts.reset(TF_NewImportGraphDefOptions(), std::default_delete<TF_ImportGraphDefOptions>());
         TF_GraphImportGraphDef(graph_.get(), graph_def.get(), opts.get(), status_.get());
@@ -89,6 +89,7 @@ bool FaceDetector::LoadGraph(std::string const filename) {
             return false;
         }
     }
+    return true;
 }
 
 void FaceDetector::ProcessP(cv::Mat &fx3_image) {
