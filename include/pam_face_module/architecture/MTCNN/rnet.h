@@ -38,6 +38,11 @@ class Rnet : public Net{
     ////////////////
     ~Rnet() {}
 
+    ////////////////////
+    /// \brief Init
+    ///
+    bool Init();
+
     ///////////////
     /// \brief Process
     /// \param img
@@ -51,12 +56,6 @@ class Rnet : public Net{
     /// \return
     ///
     std::vector<FaceBox> final_boxes() const;
-
-private:
-    ////////////////////
-    /// \brief Init
-    ///
-    bool Init();
 };
 
 #endif  // RNET_H

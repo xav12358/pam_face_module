@@ -13,22 +13,25 @@
 #include "pam_face_module/face_detector_test.h"
 #include "pam_face_module/face_recognition_test.h"
 
-TEST_F(Face_detector_test, LoadGraph) {
-  face_detector_.reset(new FaceDetector(100, 100, 40));
-  EXPECT_TRUE(LoadGraph("../pam_face_module/data/graph_MTCNN.pb"));
-}
+//TEST_F(Face_detector_test, LoadGraph) {
+//  face_detector_.reset(new FaceDetector(100, 100, 40));
+////  face_detector_->Init();
+//  EXPECT_TRUE(LoadGraph("../pam_face_module/data/graph_MTCNN.pb"));
+//}
 
-TEST_F(Face_detector_test, CreateSession) {
-  face_detector_.reset(new FaceDetector(100, 100, 40));
-  EXPECT_TRUE(CreateSession());
-}
+//TEST_F(Face_detector_test, CreateSession) {
+//  face_detector_.reset(new FaceDetector(100, 100, 40));
+////  face_detector_->Init();
+//  EXPECT_TRUE(CreateSession());
+//}
 
-TEST_F(Face_detector_test, CreateArchitecture) {
-  face_detector_.reset(new FaceDetector(100, 100, 40));
-  LoadGraph("../pam_face_module/data/graph_MTCNN.pb");
-  CreateSession();
-  EXPECT_TRUE(CreateArchitecture());
-}
+//TEST_F(Face_detector_test, CreateArchitecture) {
+//  face_detector_.reset(new FaceDetector(100, 100, 40));
+////  face_detector_->Init();
+//  LoadGraph("../pam_face_module/data/graph_MTCNN.pb");
+//  CreateSession();
+//  EXPECT_TRUE(CreateArchitecture());
+//}
 
 TEST_F(Face_detector_test, process) {
   cv::Mat input_image = cv::imread("../pam_face_module/data/Face1.jpg");

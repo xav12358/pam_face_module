@@ -28,13 +28,16 @@ bool FaceDetector::CreateArchitecture() {
         stage_size_.push_back(cv::Size(ws, hs));
         Debug(("Create Pnet stage hs/ws " + std::to_string(hs) + "/" + std::to_string(ws)));
         pnet_stages_.push_back(std::make_shared<Pnet>(this->graph_, this->sess_, hs, ws, scale));
+        pnet_stages_.at(pnet_stages_.size()-1)->Init();
     }
 
     // Generate Rnet
     rnet_ = std::make_shared<Rnet>(this->graph_, this->sess_);
+    rnet_->Init();
 
     // Generate Onet
     onet_ = std::make_shared<Onet>(this->graph_, this->sess_);
+    onet_->Init();
 
     return true;
 }

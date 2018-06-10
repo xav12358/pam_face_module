@@ -3,7 +3,6 @@
 std::vector<FaceBox> Onet::final_boxes() const { return final_boxes_; }
 
 Onet::Onet(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) : Net(graph,session){
-    is_init_ = Init();
 }
 
 bool Onet::Init() {
@@ -29,8 +28,8 @@ bool Onet::Init() {
         run_outputs_[2].oper = score_op;
         run_outputs_[2].index = 0;
     }
-
-    status_.reset(TF_NewStatus(), std::default_delete<TF_Status>());
+    is_init_ = true;
+    return is_init_;
 }
 
 void Onet::Process(cv::Mat &img, std::vector<FaceBox> &rnet_candidates) {
@@ -42,8 +41,8 @@ void Onet::Process(cv::Mat &img, std::vector<FaceBox> &rnet_candidates) {
     std::vector<float> input_buffer((size_t)(input_size));
     float *input_data = input_buffer.data();
 
+    int patch_size = kWidth_ * kHeight_ * 3;
     for (size_t i = 0; i < rnet_candidates.size(); i++) {
-        int patch_size = kWidth_ * kHeight_ * 3;
         copy_one_patch(img, rnet_candidates[i], input_data, kHeight_, kWidth_);
         input_data += patch_size;
     }

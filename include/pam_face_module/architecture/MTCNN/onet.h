@@ -38,12 +38,6 @@ class Onet :public Net{
     ~Onet(){};
 
 
-    ///////////////
-    /// \brief Process
-    /// \param img
-    /// \param pnet_candidates
-    ///
-    void Process(cv::Mat &img, std::vector<FaceBox> & rnet_candidates);
 
     ///////////////
     /// \brief final_boxes
@@ -51,12 +45,18 @@ class Onet :public Net{
     ///
     std::vector<FaceBox> final_boxes() const;
 
-private:
     ///////////////////
     /// \brief Init
     /// \return
     ///
     virtual bool Init();
+
+    ///////////////
+    /// \brief Process
+    /// \param img
+    /// \param pnet_candidates
+    ///
+    void Process(cv::Mat &img, std::vector<FaceBox> & rnet_candidates);
 };
 
 #endif  // ONET_H

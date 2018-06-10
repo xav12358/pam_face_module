@@ -7,7 +7,6 @@ Pnet::Pnet(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session,
     width_ = w;
     scale_ = scale;
 
-    is_init_ = Init();
 }
 
 std::vector<FaceBox> Pnet::final_candidate_boxes() const { return final_candidate_boxes_; }
@@ -121,13 +120,12 @@ bool Pnet::Init() {
         run_outputs_[1].index = 0;
     }
 
-    status_.reset(TF_NewStatus(), std::default_delete<TF_Status>());
-
-    return true;
+    is_init_ = true;
+    return is_init_;
 }
 
 void Pnet::Process(cv::Mat const &fx3_image) {
-    Debug(" >>>>> Onet::Process ");
+    Debug(" >>>>> Pnet::Process ");
 
     // Put the data to the input placeholder
     FeedML(fx3_image);
