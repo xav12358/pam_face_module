@@ -23,6 +23,16 @@ void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
   cv::resize(chop_img, resized, cv::Size(width, height), 0, 0);
 }
 
+
+void copy_one_image(const cv::Mat &img, float *data_to) {
+//  cv::Mat resized(height, width, CV_32FC3, data_to);
+
+//  cv::Mat chop_img = img(cv::Range(input_box.py0, input_box.py1),
+//                         cv::Range(input_box.px0, input_box.px1));
+
+
+}
+
 void dummy_deallocator(void *data, size_t len, void *arg) {}
 
 void nms_boxes(std::vector<FaceBox> &input, float threshold, int type_NMS,

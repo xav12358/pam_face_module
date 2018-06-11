@@ -41,6 +41,8 @@ include_directories( ${PROJECT_SOURCE_DIR}/include)
 
 find_package(OpenCV 3.2.0 REQUIRED)
 find_package(GTest REQUIRED)
+find_package(jsoncpp REQUIRED)
+
 #SET("OpenCV_DIR" "/home/xavier/opencv/opencv-3.2.0/")
 
 SET(OpenCV_LIBS  opencv_core opencv_highgui opencv_videoio opencv_imgproc opencv_imgcodecs )

@@ -69,6 +69,28 @@ TEST_F(Aligner_test, test_FindTransform) {
 }
 
 int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
+
+    cv::Mat imager = cv::Mat::ones(cv::Size(10,10),CV_32F) *1.0;
+    cv::Mat imageg = cv::Mat::ones(cv::Size(10,10),CV_32F) *2.0;
+    cv::Mat imageb = cv::Mat::ones(cv::Size(10,10),CV_32F) *4.0;
+    std::vector<cv::Mat> channels;
+
+    cv::Mat fin_img;
+
+    channels.push_back(imager);
+    channels.push_back(imageg);
+    channels.push_back(imageb);
+    merge(channels, fin_img);
+
+    cv::Mat     mean;
+    cv::Mat     stddev;
+
+    cv::meanStdDev ( fin_img, mean, stddev );
+
+    std::cout  << "mean.size "<< mean.size() << " " << mean.at<double>(0,0)<< mean.at<double>(1,0)<< mean.at<double>(2,0)<< std::endl;
+
+    std::cout  << "mean.size "<< stddev.size() << std::endl;
+
+//  ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

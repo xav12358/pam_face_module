@@ -1,11 +1,11 @@
-#include "pam_face_module/face_recognition.h"
+#include "pam_face_module/face_feature.h"
 
-FaceRecognition::FaceRecognition(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) : Net(graph,session){
+FaceFeature::FaceFeature(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) : Net(graph,session){
 }
 
 
 
-bool FaceRecognition::Init() {
+bool FaceFeature::Init() {
     // Prepare input
     {
         TF_Operation *input_op = TF_GraphOperationByName(graph_.get(), "input");
@@ -25,20 +25,20 @@ bool FaceRecognition::Init() {
 }
 
 
-void FaceRecognition::Process( std::vector<cv::Mat> &image_candidates) {
+void FaceFeature::Process( std::vector<cv::Mat> &image_candidates) {
     Debug(" >>>>> FaceRecognition::Process ");
-    int batch = int(image_candidates.size());
+//    int batch = int(image_candidates.size());
 
-    /* prepare input image data */
-    int input_size = batch * kHeight_ * kWidth_ * 3;
-    std::vector<float> input_buffer((size_t)(input_size));
-    float *input_data = input_buffer.data();
+//    /* prepare input image data */
+//    int input_size = batch * kHeight_ * kWidth_ * 3;
+//    std::vector<float> input_buffer((size_t)(input_size));
+//    float *input_data = input_buffer.data();
 
-    int patch_size = kWidth_ * kHeight_ * 3;
-    for (size_t i = 0; i < image_candidates.size(); i++) {
-        copy_one_patch(img, image_candidates[i], input_data, kHeight_, kWidth_);
-        input_data += patch_size;
-    }
+//    int patch_size = kWidth_ * kHeight_ * 3;
+//    for (size_t i = 0; i < image_candidates.size(); i++) {
+//        copy_one_patch(img, image_candidates[i], input_data, kHeight_, kWidth_);
+//        input_data += patch_size;
+//    }
 
 //    // Generate input.
 //    std::shared_ptr<int64_t> raw_input_dims_;

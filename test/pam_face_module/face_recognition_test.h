@@ -1,13 +1,13 @@
-#ifndef FACE_RECOGNITION_TEST_H
-#define FACE_RECOGNITION_TEST_H
+#ifndef FACE_FEATURE_TEST_H
+#define FACE_FEATURE_TEST_H
 
 #include <gtest/gtest.h>
-#include <pam_face_module/face_recognition.h>
+#include <pam_face_module/face_feature.h>.h>
 
-class Face_recognition_test : public ::testing::Test {
+class Face_feature_test : public ::testing::Test {
 
 public:
-  Face_recognition_test() {}
+  Face_feature_test() {}
 
 protected:
   void SetUp() {
@@ -20,4 +20,4 @@ protected:
   }
 };
 
-#endif // FACE_RECOGNITION_TEST_H
+#endif // FACE_FEATURE_TEST_H
