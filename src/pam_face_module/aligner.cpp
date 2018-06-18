@@ -1,6 +1,5 @@
 #include "pam_face_module/aligner.h"
 
-#include <eigen3/Eigen/Dense>
 Eigen::MatrixXf cv2E(cv::Point2f p) {
   Eigen::MatrixXf ret(1, 2);
   ret(0, 0) = p.x;

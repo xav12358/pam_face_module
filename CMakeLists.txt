@@ -42,9 +42,11 @@ include_directories( ${PROJECT_SOURCE_DIR}/include)
 find_package(OpenCV 3.2.0 REQUIRED)
 find_package(GTest REQUIRED)
 find_package(jsoncpp REQUIRED)
+#set( REQUIRED_LIBRARIES jsonrpccpp-client jsonrpccpp-common jsonrpccpp-server jsoncpp curl json-glib-dev)
 
 #SET("OpenCV_DIR" "/home/xavier/opencv/opencv-3.2.0/")
 
+set( JSONCPP_LIBRARIES    jsoncpp curl )
 SET(OpenCV_LIBS  opencv_core opencv_highgui opencv_videoio opencv_imgproc opencv_imgcodecs )
 add_executable("pam_face_module_test" ${SOURCES} ${HEADERS})
 target_link_libraries("pam_face_module_test"
@@ -55,4 +57,5 @@ target_link_libraries("pam_face_module_test"
 #    ${PROJECT_SOURCE_DIR}/lib/tensorflow/libtensorflow_framework.so
     ${OpenCV_LIBS}
     ${GTEST_LIBRARIES}
+    ${JSONCPP_LIBRARIES}
     pthread)
