@@ -1,11 +1,11 @@
-#include "pam_face_module/face_feature.h"
+#include "pam_face_module/architecture/FaceNet/facenet.h"
 
-FaceFeature::FaceFeature(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) : Net(graph,session){
+FaceNet::FaceNet(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session) : Net(graph,session){
 }
 
 
 
-bool FaceFeature::Init() {
+bool FaceNet::Init() {
     // Prepare input
     {
         TF_Operation *input_op = TF_GraphOperationByName(graph_.get(), "input");
@@ -25,7 +25,7 @@ bool FaceFeature::Init() {
 }
 
 
-void FaceFeature::Process( std::vector<cv::Mat> &image_candidates) {
+void FaceNet::Process( std::vector<cv::Mat> &image_candidates) {
     Debug(" >>>>> FaceRecognition::Process ");
 //    int batch = int(image_candidates.size());
 

@@ -3,7 +3,7 @@
 
 #include <pam_face_module/architecture/MTCNN/net.h>
 
-class FaceFeature : public Net {
+class FaceNet : public Net {
 
   const int kHeight_ = 160;
   const int kWidth_ = 160;
@@ -22,7 +22,7 @@ class FaceFeature : public Net {
   TF_Tensor *run_output_tensors_[1];
 
 public:
-  FaceFeature(std::shared_ptr<TF_Graph> graph,
+  FaceNet(std::shared_ptr<TF_Graph> graph,
                   std::shared_ptr<TF_Session> session);
 
   bool Init();

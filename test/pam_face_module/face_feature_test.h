@@ -2,12 +2,12 @@
 #define FACE_FEATURE_TEST_H
 
 #include <gtest/gtest.h>
-#include <pam_face_module/face_feature.h>
+#include <pam_face_module/architecture/FaceNet/facenet.h>
 
-class Face_feature_test : public ::testing::Test {
+class FaceNet_test : public ::testing::Test {
 
 public:
-  Face_feature_test() {}
+  FaceNet_test() {}
 
 protected:
   void SetUp() {
