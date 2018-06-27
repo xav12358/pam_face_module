@@ -15,36 +15,36 @@
 #include "pam_face_module/face_feature_test.h"
 #include "pam_face_module/feature_manager_test.h"
 
- TEST_F(Face_detector_test, LoadGraph) {
+TEST_F(Face_detector_test, LoadGraph) {
   face_detector_.reset(new FaceDetector(100, 100, 40));
-//  face_detector_->Init();
+  //  face_detector_->Init();
   EXPECT_TRUE(LoadGraph("../pam_face_module/test/data/graph_MTCNN.pb"));
 }
 
- TEST_F(Face_detector_test, CreateSession) {
+TEST_F(Face_detector_test, CreateSession) {
   face_detector_.reset(new FaceDetector(100, 100, 40));
-//  face_detector_->Init();
+  //  face_detector_->Init();
   EXPECT_TRUE(CreateSession());
 }
 
- TEST_F(Face_detector_test, CreateArchitecture) {
+TEST_F(Face_detector_test, CreateArchitecture) {
   face_detector_.reset(new FaceDetector(100, 100, 40));
-//  face_detector_->Init();
+  //  face_detector_->Init();
   LoadGraph("../pam_face_module/test/data/graph_MTCNN.pb");
   CreateSession();
   EXPECT_TRUE(CreateArchitecture());
 }
 
- TEST_F(Face_detector_test, process) {
+TEST_F(Face_detector_test, process) {
   cv::Mat input_image = cv::imread("../pam_face_module/test/data/Face1.jpg");
   face_detector_.reset(
-      new FaceDetector(input_image.rows, input_image.cols, 40 ));
+      new FaceDetector(input_image.rows, input_image.cols, 40));
   face_detector_->Init("../pam_face_module/test/data/graph_MTCNN.pb");
   face_detector_->Process(input_image);
   EXPECT_EQ(0, 1);
 }
 
- TEST_F(Aligner_test, test_ProcessExtractFeature) {
+TEST_F(Aligner_test, test_ProcessExtractFeature) {
 
   Setup_ProcessExtractFeatures();
 
@@ -58,7 +58,7 @@
   }
 }
 
- TEST_F(Aligner_test, test_FindTransform) {
+TEST_F(Aligner_test, test_FindTransform) {
 
   Transformation t = Setup_FindTransform();
 #define ABS_ERROR 0.01f
@@ -97,29 +97,31 @@ TEST_F(Feature_manager_test, test_write) {
 
 int main(int argc, char **argv) {
 
-  //    cv::Mat imager = cv::Mat::ones(cv::Size(10,10),CV_32F) *1.0;
-  //    cv::Mat imageg = cv::Mat::ones(cv::Size(10,10),CV_32F) *2.0;
-  //    cv::Mat imageb = cv::Mat::ones(cv::Size(10,10),CV_32F) *4.0;
-  //    std::vector<cv::Mat> channels;
+  cv::Mat imager = cv::Mat::ones(cv::Size(10, 10), CV_32F) * 1.0;
+  cv::Mat imageg = cv::Mat::ones(cv::Size(10, 10), CV_32F) * 2.0;
+  cv::Mat imageb = cv::Mat::ones(cv::Size(10, 10), CV_32F) * 4.0;
+  std::vector<cv::Mat> channels;
 
-  //    cv::Mat fin_img;
+  cv::Mat u8x3_fin_img;
 
-  //    channels.push_back(imager);
-  //    channels.push_back(imageg);
-  //    channels.push_back(imageb);
-  //    merge(channels, fin_img);
+  channels.push_back(imager);
+  channels.push_back(imageg);
+  channels.push_back(imageb);
+  merge(channels, u8x3_fin_img);
 
-  //    cv::Mat     mean;
-  //    cv::Mat     stddev;
+  cv::Mat u8x1_fin_img = cv::Mat(10, 30, CV_32F, u8x3_fin_img.data);
 
-  //    cv::meanStdDev ( fin_img, mean, stddev );
+  cv::Mat mean;
+  cv::Mat stddev;
 
-  //    std::cout  << "mean.size "<< mean.size() << " " <<
-  //    mean.at<double>(0,0)<< mean.at<double>(1,0)<< mean.at<double>(2,0)<<
-  //    std::endl;
+  cv::meanStdDev(u8x1_fin_img, mean, stddev);
 
-  //    std::cout  << "mean.size "<< stddev.size() << std::endl;
+  std::cout << "mean.size " << mean.size() << " " << mean.at<double>(0,0) << std::endl;
 
-  ::testing::InitGoogleTest(&argc, argv);
+  std::cout << "stddev.size " << stddev.size() << std::endl;
+
+  std::cout << u8x1_fin_img << std::endl;
+
+  //  ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

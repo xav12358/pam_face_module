@@ -25,9 +25,23 @@ public:
   FaceNet(std::shared_ptr<TF_Graph> graph,
                   std::shared_ptr<TF_Session> session);
 
+  ////////////////////
+  /// \brief Init
+  /// \return
+  ///
   bool Init();
 
+  ////////////////
+  /// \brief Normalize
+  /// \param u8x3_Image
+  /// \return
+  ///
+  cv::Mat Normalize(cv::Mat u8x3_Image);
 
+  ////////////////////
+  /// \brief Process
+  /// \param image_candidates
+  ///
   void Process( std::vector<cv::Mat> &image_candidates);
 };
 

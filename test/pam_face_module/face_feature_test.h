@@ -7,7 +7,7 @@
 class FaceNet_test : public ::testing::Test {
 
 public:
-  FaceNet_test() {}
+  FaceNet_test () {}
 
 protected:
   void SetUp() {

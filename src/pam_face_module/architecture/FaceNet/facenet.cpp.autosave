@@ -1,5 +1,6 @@
 #include "pam_face_module/architecture/FaceNet/facenet.h"
 
+
 FaceNet::FaceNet(std::shared_ptr<TF_Graph> graph,
                  std::shared_ptr<TF_Session> session)
     : Net(graph, session) {}
