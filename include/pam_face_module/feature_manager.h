@@ -11,10 +11,9 @@
 
 class FeatureManager
 {
+    const int kFeatureSize_ = 128;
 public:
     FeatureManager();
-
-
     static std::unordered_map<std::string, std::unordered_map<std::string, Eigen::MatrixXf> > Read(std::string filename);
     static void Write(std::unordered_map<std::string,
                       std::unordered_map<std::string, Eigen::MatrixXf>> person_features, std::string filename);

@@ -81,15 +81,6 @@ private:
   ///
   void ProcessP(cv::Mat &fx3_image);
 
-
-
-
-  /////////////////
-  /// \brief Face_detector::read_file
-  /// \param fileName
-  /// \return
-  ///
-  std::shared_ptr<TF_Buffer> ReadFile(std::string const fileName);
 };
 
 #endif // FACE_DETECTOR_H

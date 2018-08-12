@@ -22,6 +22,7 @@ protected:
 
 public:
     Net(std::shared_ptr<TF_Graph> graph, std::shared_ptr<TF_Session> session);
+    Net();
 
     virtual bool Init() = 0;
 };

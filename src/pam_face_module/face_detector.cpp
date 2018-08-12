@@ -1,4 +1,5 @@
 #include "pam_face_module/face_detector.h"
+#include "pam_face_module/utils.h"
 
 #include <iostream>
 
@@ -75,6 +76,8 @@ bool FaceDetector::Init(std::string const filename) {
 
     // indicate if init is made
     is_init_ = ret;
+
+    return is_init_;
 }
 
 bool FaceDetector::LoadGraph(std::string const filename) {
@@ -157,10 +160,8 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
 
     for (unsigned int i = 0; i < face_list_.size(); i++) {
         FaceBox &box = face_list_[i];
-
         std::swap(box.x0, box.y0);
         std::swap(box.x1, box.y1);
-
         for (int l = 0; l < 5; l++) {
             std::swap(box.landmark.x[l], box.landmark.y[l]);
         }
@@ -191,27 +192,3 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
 #endif
 }
 
-static void free_buffer(void *data, std::size_t length) {
-    (void)length;
-    std::free(data);
-}
-
-std::shared_ptr<TF_Buffer> FaceDetector::ReadFile(std::string const filename) {
-    std::shared_ptr<FILE> f(std::fopen(filename.c_str(), "rb"), std::fclose);
-    if (!f) {
-        std::cerr << "File " << std::string(filename) << " doesn't exist" << std::endl;
-        return std::shared_ptr<TF_Buffer>();
-    }
-
-    std::fseek(f.get(), 0, SEEK_END);
-    long fsize = ftell(f.get());
-    std::fseek(f.get(), 0, SEEK_SET);
-
-    std::shared_ptr<TF_Buffer> buf(TF_NewBuffer(), TF_DeleteBuffer);
-    buf->data = ::malloc(fsize);
-    std::fread(const_cast<void *>(buf->data), fsize, 1, f.get());
-    buf->length = fsize;
-    buf->data_deallocator = free_buffer;
-
-    return buf;
-}

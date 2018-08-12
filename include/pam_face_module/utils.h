@@ -96,4 +96,6 @@ void padding(int img_h, int img_w, std::vector<FaceBox> &rects);
 void process_boxes(std::vector<FaceBox> &input, int img_h, int img_w,
                    std::vector<FaceBox> &rects);
 
+std::shared_ptr<TF_Buffer> ReadFile(std::string const filename);
+
 #endif // UTILS_H

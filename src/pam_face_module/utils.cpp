@@ -5,6 +5,12 @@
 #include <functional>
 #include <iostream>
 
+
+static void free_buffer(void *data, std::size_t length) {
+    (void)length;
+    std::free(data);
+}
+
 void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
                     int height, int width) {
   cv::Mat resized(height, width, CV_32FC3, data_to);
@@ -25,12 +31,8 @@ void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
 
 
 void copy_one_image(const cv::Mat &img, float *data_to) {
-//  cv::Mat resized(height, width, CV_32FC3, data_to);
-
-//  cv::Mat chop_img = img(cv::Range(input_box.py0, input_box.py1),
-//                         cv::Range(input_box.px0, input_box.px1));
-
-
+  cv::Mat resized(img.rows, img.cols, CV_32FC3, data_to);
+  cv::resize(img, resized, cv::Size(img.cols, img.rows), 0, 0);
 }
 
 void dummy_deallocator(void *data, size_t len, void *arg) {}
@@ -141,4 +143,25 @@ void process_boxes(std::vector<FaceBox> &input, int img_h, int img_w,
   regress_boxes(rects);
   square_boxes(rects);
   padding(img_h, img_w, rects);
+}
+
+
+std::shared_ptr<TF_Buffer> ReadFile(std::string const filename) {
+    std::shared_ptr<FILE> f(std::fopen(filename.c_str(), "rb"), std::fclose);
+    if (!f) {
+        std::cerr << "File " << std::string(filename) << " doesn't exist" << std::endl;
+        return std::shared_ptr<TF_Buffer>();
+    }
+
+    std::fseek(f.get(), 0, SEEK_END);
+    long fsize = ftell(f.get());
+    std::fseek(f.get(), 0, SEEK_SET);
+
+    std::shared_ptr<TF_Buffer> buf(TF_NewBuffer(), TF_DeleteBuffer);
+    buf->data = ::malloc(fsize);
+    std::fread(const_cast<void *>(buf->data), fsize, 1, f.get());
+    buf->length = fsize;
+    buf->data_deallocator = free_buffer;
+
+    return buf;
 }

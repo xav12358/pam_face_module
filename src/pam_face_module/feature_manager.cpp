@@ -21,7 +21,7 @@ FeatureManager::Read(std::string filename) {
     for (Json::Value::iterator it_orientation = (*it_person).begin();
          it_orientation != (*it_person).end(); ++it_orientation) {
       auto iterv = (*it_orientation).begin();
-      Eigen::MatrixXf feature_vector(1, 128);
+      Eigen::MatrixXf feature_vector(128, 1);
       int i = 0;
       for (Json::Value::iterator it_feature = (*iterv).begin();
            it_feature != (*iterv).end(); ++it_feature, ++i) {

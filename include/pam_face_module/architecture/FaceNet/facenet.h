@@ -3,10 +3,13 @@
 
 #include <pam_face_module/architecture/MTCNN/net.h>
 
+#include <eigen3/Eigen/Dense>
+
 class FaceNet : public Net {
 
   const int kHeight_ = 160;
   const int kWidth_ = 160;
+  const int kFeatureSize_ = 128;
 
   //     Gerenate input.
   std::shared_ptr<float> raw_input_data_;
@@ -22,8 +25,28 @@ class FaceNet : public Net {
   TF_Tensor *run_output_tensors_[1];
 
 public:
-  FaceNet(std::shared_ptr<TF_Graph> graph,
-                  std::shared_ptr<TF_Session> session);
+  FaceNet();
+
+
+  //////////////////////
+  /// \brief CreateArchitecture
+  /// \return
+  ///
+  bool CreateArchitecture();
+
+  /////////////
+  /// \brief createSession
+  /// \return
+  ///
+  bool CreateSession();
+
+
+  ////////////////////
+  /// \brief Face_detector::loadGraph
+  /// \param fileName
+  ///
+  bool LoadGraph(std::string const fileName);
+
 
   ////////////////////
   /// \brief Init
@@ -31,12 +54,12 @@ public:
   ///
   bool Init();
 
-  ////////////////
-  /// \brief Normalize
-  /// \param u8x3_Image
+  /////////////////
+  /// \brief Init
+  /// \param filename
   /// \return
   ///
-  cv::Mat Normalize(cv::Mat u8x3_Image);
+  bool Init(std::string const filename);
 
   ////////////////////
   /// \brief Process
