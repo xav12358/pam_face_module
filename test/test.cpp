@@ -10,31 +10,29 @@
 
 #include <gtest/gtest.h>
 
-#include "pam_face_module/aligner_test.h"
-#include "pam_face_module/face_detector_test.h"
-#include "pam_face_module/feature_manager_test.h"
-#include "pam_face_module/feature_detector_test.h"
-
-#include "pam_face_module/architecture/FaceNet/facenet.h"
+#include "face_module/aligner_test.h"
+#include "face_module/face_detector_test.h"
+#include "face_module/feature_manager_test.h"
+#include "face_module/feature_detector_test.h"
 
 
 TEST_F(Feature_detector_test, Init) {
     feature_detector_.reset(new FeatureDetector());
-    EXPECT_TRUE(Init("../pam_face_module/test/data/graph/graph_FaceFeature.pb"));
+    EXPECT_TRUE(Init("../../pam_face_module/test/data/graph/graph_FaceFeature.pb"));
 }
 
 TEST_F(Feature_detector_test, Normalize) {
     feature_detector_.reset(new FeatureDetector());
-    Init("../pam_face_module/test/data/graph/graph_FaceFeature.pb");
-    cv::Mat input_image = cv::imread("../pam_face_module/test/data/warped_images/chips0.png");
+    Init("../../pam_face_module/test/data/graph/graph_FaceFeature.pb");
+    cv::Mat input_image = cv::imread("../../pam_face_module/test/data/warped_images/chips0.png");
     cv::Mat normalized_image = Normalize(input_image);
 
 }
 
 TEST_F(Feature_detector_test, Process) {
     feature_detector_.reset(new FeatureDetector());
-    Init("../pam_face_module/test/data/graph/graph_FaceFeature.pb");
-    cv::Mat input_image = cv::imread("../pam_face_module/test/data/warped_images/chips0.png");
+    Init("../../pam_face_module/test/data/graph/graph_FaceFeature.pb");
+    cv::Mat input_image = cv::imread("../../pam_face_module/test/data/warped_images/chips0.png");
     std::vector<cv::Mat> raw_image_vector;
     raw_image_vector.push_back(input_image);
     feature_detector_->Process(raw_image_vector);
@@ -49,7 +47,7 @@ TEST_F(Feature_detector_test, Process) {
 //TEST_F(Face_detector_test, LoadGraph) {
 //    face_detector_.reset(new FaceDetector(100, 100, 40));
 //    //  face_detector_->Init();
-//    EXPECT_TRUE(LoadGraph("../pam_face_module/test/data/graph/graph_MTCNN.pb"));
+//    EXPECT_TRUE(LoadGraph("../../pam_face_module/test/data/graph/graph_MTCNN.pb"));
 //}
 
 //TEST_F(Face_detector_test, CreateSession) {
@@ -61,16 +59,16 @@ TEST_F(Feature_detector_test, Process) {
 //TEST_F(Face_detector_test, CreateArchitecture) {
 //    face_detector_.reset(new FaceDetector(100, 100, 40));
 //    //  face_detector_->Init();
-//    LoadGraph("../pam_face_module/test/data/graph/graph_MTCNN.pb");
+//    LoadGraph("../../pam_face_module/test/data/graph/graph_MTCNN.pb");
 //    CreateSession();
 //    EXPECT_TRUE(CreateArchitecture());
 //}
 
 //TEST_F(Face_detector_test, process) {
-//    cv::Mat input_image = cv::imread("../pam_face_module/test/data/Face1.jpg");
+//    cv::Mat input_image = cv::imread("../../pam_face_module/test/data/Face1.jpg");
 //    face_detector_.reset(
 //                new FaceDetector(input_image.rows, input_image.cols, 40));
-//    face_detector_->Init("../pam_face_module/test/data/graph/graph_MTCNN.pb");
+//    face_detector_->Init("../../pam_face_module/test/data/graph/graph_MTCNN.pb");
 //    face_detector_->Process(input_image);
 //    EXPECT_EQ(0, 1);
 //}
@@ -105,7 +103,7 @@ TEST_F(Feature_detector_test, Process) {
 
 //TEST_F(Feature_manager_test, test_read) {
 //    auto dataset =
-//            FeatureManager::Read("../pam_face_module/test/data/feature_file/facerec_128D.txt");
+//            FeatureManager::Read("../../pam_face_module/test/data/feature_file/facerec_128D.txt");
 //    auto dataset_iter = dataset.begin();
 //    EXPECT_TRUE(dataset.size() == 2);
 //    EXPECT_TRUE((*dataset_iter).first == "DavidVu");
@@ -113,11 +111,11 @@ TEST_F(Feature_detector_test, Process) {
 
 //TEST_F(Feature_manager_test, test_write) {
 //    auto dataset =
-//            FeatureManager::Read("../pam_face_module/test/data/feature_file/facerec_128D.txt");
+//            FeatureManager::Read("../../pam_face_module/test/data/feature_file/facerec_128D.txt");
 //    auto dataset_iter = dataset.begin();
 
 //    std::string filename_tmp =
-//            "../pam_face_module/test/data/feature_file/tmp_facerec_128D.txt";
+//            "../../pam_face_module/test/data/feature_file/tmp_facerec_128D.txt";
 //    FeatureManager::Write(dataset, filename_tmp);
 
 //    auto dataset_tmp = FeatureManager::Read(filename_tmp);
