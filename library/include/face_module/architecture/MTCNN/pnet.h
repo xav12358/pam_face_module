@@ -6,7 +6,6 @@
 #include <opencv2/opencv.hpp>
 
 #include <face_module/architecture/MTCNN/net.h>
-#include <face_module/utils.h>
 
 class Pnet: public Net {
 

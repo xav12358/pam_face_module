@@ -5,7 +5,7 @@
 #include <tensorflow/c/c_api.h>
 
 #include <face_module/architecture/FaceNet/facenet.h>
-#include <face_module/utils.h>
+#include <face_module/utils/utils.h>
 
 class Feature_detector_test;
 class FeatureDetector {

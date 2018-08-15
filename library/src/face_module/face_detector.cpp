@@ -1,7 +1,26 @@
 #include "face_module/face_detector.h"
-#include "face_module/utils.h"
 
 #include <iostream>
+
+std::vector<FaceBox> FaceDetector::total_pnet_boxes() const
+{
+    return total_pnet_boxes_;
+}
+
+std::vector<FaceBox> FaceDetector::total_rnet_boxes() const
+{
+    return total_rnet_boxes_;
+}
+
+std::vector<FaceBox> FaceDetector::total_onet_boxes() const
+{
+    return total_onet_boxes_;
+}
+
+std::vector<FaceBox> FaceDetector::face_list() const
+{
+    return face_list_;
+}
 
 FaceDetector::FaceDetector(int h, int w, int min_size)
     : height_(h), width_(w), min_size_(min_size) {
@@ -157,7 +176,6 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
     face_list_.clear();
     regress_boxes(total_onet_boxes_);
     nms_boxes(total_onet_boxes_, 0.7, NMSType::kNMS_MIN, face_list_);
-
     for (unsigned int i = 0; i < face_list_.size(); i++) {
         FaceBox &box = face_list_[i];
         std::swap(box.x0, box.y0);
@@ -176,10 +194,12 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
 
     for (auto f : rnet_boxes) {
         cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
+        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 255), 2);
     }
 
     for (auto f : face_list_) {
+        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
         for (int j = 0; j < 5; j++) {
             cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
                        cv::Scalar(0, 0, 255), 5);

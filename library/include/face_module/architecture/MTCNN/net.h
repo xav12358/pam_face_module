@@ -5,7 +5,7 @@
 #include <memory>
 #include <opencv2/opencv.hpp>
 
-#include <face_module/utils.h>
+#include <face_module/utils/utils.h>
 
 
 class Net

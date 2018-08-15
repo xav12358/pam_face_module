@@ -6,7 +6,6 @@
 #include <vector>
 
 #include <face_module/architecture/MTCNN/net.h>
-#include <face_module/utils.h>
 
 class Onet :public Net{
 

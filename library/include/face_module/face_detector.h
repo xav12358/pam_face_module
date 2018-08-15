@@ -8,8 +8,6 @@
 #include <face_module/architecture/MTCNN/pnet.h>
 #include <face_module/architecture/MTCNN/rnet.h>
 
-#include <face_module/utils.h>
-
 class Face_detector_test;
 class FaceDetector {
 
@@ -53,6 +51,14 @@ public:
   /// \param u8x3_image
   ///
   void Process(cv::Mat &u8x3_image);
+
+  std::vector<FaceBox> total_pnet_boxes() const;
+
+  std::vector<FaceBox> total_rnet_boxes() const;
+
+  std::vector<FaceBox> total_onet_boxes() const;
+
+  std::vector<FaceBox> face_list() const;
 
 private:
 
