@@ -11,42 +11,32 @@ public:
 
   Aligner_test() {}
 
-  void Setup_ProcessExtractFeatures() {
-    const float kMeanFaceShape_x[5] = {0.224152, 0.75610125, 0.490127, 0.254149,
-                                       0.726104};
-    const float kMeanFaceShape_y[5] = {0.2119465, 0.2119465, 0.628106, 0.780233,
-                                       0.780233};
-    std::vector<cv::Point2f> input_features;
-    for (int i = 0; i < 5; i++) {
-      cv::Point2f p_input;
-      p_input.x = kMeanFaceShape_x[i];
-      p_input.y = kMeanFaceShape_y[i];
-      input_features.push_back(p_input);
-    }
-#define DESIRED_SIZE 1.f
-    std::vector<std::vector<cv::Point2f>> input_feature_tables;
-    input_feature_tables.push_back(input_features);
+
+  cv::Mat Setup_FindTransform(std::vector<cv::Point2f> landmarks) {
+      float image_size = 160;
+
+      const float kMeanFaceShape_x[5] = {0.224152, 0.75610125, 0.490127, 0.254149,
+                                         0.726104};
+      const float kMeanFaceShape_y[5] = {0.2119465, 0.2119465, 0.628106, 0.780233,
+                                         0.780233};
+      const float kPadding = 0.1f;
+
+      std::vector<cv::Point2f> input_features;
+      for (int i = 0; i < 5; i++) {
+        cv::Point2f p_input;
+        p_input.x =
+            (kPadding + kMeanFaceShape_x[i]) / (2.f * kPadding + 1.f) * image_size;
+        p_input.y =
+            (kPadding + kMeanFaceShape_y[i]) / (2.f * kPadding + 1.f) * image_size;
+        input_features.push_back(p_input);
+      }
+
     aligner_.reset(new Aligner());
-    aligner_->ProcessExtractFeatures(DESIRED_SIZE, input_feature_tables);
-    std::vector<Transformation> image_transformations =
-        aligner_->image_transformations();
+    return aligner_->FindTransform(landmarks,input_features , image_size);
   }
 
-  Transformation Setup_FindTransform() {
-    const float kMeanFaceShape_x[5] = {0.224152, 0.75610125, 0.490127, 0.254149,
-                                       0.726104};
-    const float kMeanFaceShape_y[5] = {0.2119465, 0.2119465, 0.628106, 0.780233,
-                                       0.780233};
-    std::vector<cv::Point2f> input_features;
-    for (int i = 0; i < 5; i++) {
-      cv::Point2f p_input;
-      p_input.x = kMeanFaceShape_x[i];
-      p_input.y = kMeanFaceShape_y[i];
-      input_features.push_back(p_input);
-    }
-
-    aligner_.reset(new Aligner());
-    return  aligner_->FindTransform(input_features, input_features);
+  std::vector<cv::Mat>  Setup_ProcessExtractImages(cv::Mat u8x3_image, std::vector<std::vector<cv::Point2f>> landmark_list) {
+    return  aligner_->ProcessExtractImages(u8x3_image, landmark_list);
   }
 
 protected:

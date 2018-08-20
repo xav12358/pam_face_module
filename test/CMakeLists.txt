@@ -5,10 +5,13 @@ project("pam_face_module_test")
 
 add_definitions("-std=c++11")
 
-file(GLOB SOURCES "face_module/*.cpp" "*.cpp")
+file(GLOB SOURCES "test.cpp" )
 file(GLOB HEADERS "")
 include_directories( "${PROJECT_SOURCE_DIR}/../library/include")
 
+find_package(GTest REQUIRED)
+
 add_executable("pam_face_module_test" ${SOURCES} ${HEADERS})
 target_link_libraries("pam_face_module_test"
+    ${GTEST_LIBRARIES}
     "face_module")

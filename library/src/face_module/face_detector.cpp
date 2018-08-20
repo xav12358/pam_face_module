@@ -203,6 +203,8 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
         for (int j = 0; j < 5; j++) {
             cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
                        cv::Scalar(0, 0, 255), 5);
+
+            std::cout << "landmark " << j << " " << cv::Point(f.landmark.x[j], f.landmark.y[j]) << std::endl;
         }
     }
 

@@ -25,7 +25,7 @@ FeatureManager::Read(std::string filename) {
       int i = 0;
       for (Json::Value::iterator it_feature = (*iterv).begin();
            it_feature != (*iterv).end(); ++it_feature, ++i) {
-        feature_vector(0, i) = (*it_feature).asDouble();
+        feature_vector(i, 0) = (*it_feature).asDouble();
       }
       person_features[it_person.key().asString()]
                      [it_orientation.key().asString()] = feature_vector;

@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 // Debug
-#define USEDEBUG
+//#define USEDEB UG
 
 #ifdef USEDEBUG
 #define Debug(x) std::cout << x << std::endl;
