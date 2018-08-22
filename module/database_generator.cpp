@@ -15,7 +15,7 @@
 void processCapture(std::string input_stream, std::string output_feature_folder,
                     std::string graph_MTCNN, std::string graph_FaceFeature) {
 
-  cv::VideoCapture *video_capture = new cv::VideoCapture(1);
+  cv::VideoCapture *video_capture = new cv::VideoCapture(0);
   video_capture->set(
       CV_CAP_PROP_FOURCC,
       CV_FOURCC('B', 'G', 'R', '3')); // diff from mine, using as example
