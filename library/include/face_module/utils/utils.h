@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 // Debug
-//#define USEDEB UG
+#define USEDEBUG
 
 #ifdef USEDEBUG
 #define Debug(x) std::cout << x << std::endl;
@@ -86,6 +86,8 @@ typedef enum { kNMS_UNION, kNMS_MIN } NMSType;
 
 void copy_one_patch(const cv::Mat &img, FaceBox &input_box, float *data_to,
                     int height, int width);
+void copy_one_patch_inv(const cv::Mat &img, FaceBox &input_box, float *data_to,
+                                                               int height, int width);
 void copy_one_image(const cv::Mat &img, float *data_to);
 void dummy_deallocator(void *data, size_t len, void *arg);
 void nms_boxes(std::vector<FaceBox> &input, float threshold, int type,

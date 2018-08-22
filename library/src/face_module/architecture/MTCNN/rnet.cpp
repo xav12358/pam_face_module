@@ -33,16 +33,22 @@ void Rnet::Process(cv::Mat &img, std::vector<FaceBox> &pnet_candidates) {
     Debug(" >>>>> Rnet::Process ");
     int batch = int(pnet_candidates.size());
 
+    std::cout << "Rnet::Process1  " << pnet_candidates.size() << std::endl;
+
     /* prepare input image data */
     int input_size = batch * kHeight_ * kWidth_ * 3;
     std::vector<float> input_buffer((size_t)(input_size));
     float *input_data = input_buffer.data();
+    std::cout << "Rnet::Process2  " << std::endl;
 
+    cv::imshow("img",img);
+    cv::waitKey(-1);
     int patch_size = kWidth_ * kHeight_ * 3;
     for (size_t i = 0; i < pnet_candidates.size(); i++) {
-        copy_one_patch(img, pnet_candidates[i], input_data, kHeight_, kWidth_);
+        copy_one_patch_inv(img, pnet_candidates[i], input_data, kHeight_, kWidth_);
         input_data += patch_size;
     }
+    std::cout << "Rnet::Process3  " << std::endl;
 
     // Generate input.
     std::shared_ptr<int64_t> raw_input_dims_;

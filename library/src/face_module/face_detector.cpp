@@ -30,24 +30,29 @@ FaceDetector::FaceDetector(int h, int w, int min_size)
 bool FaceDetector::CreateArchitecture() {
     // Generate the pnet pyramidal stages
 
-    int min_side = std::min(height_, width_);
+    float min_side = std::min(height_, width_);
     float m = 12.0f / min_size_;
 
-    min_side = int(float(min_side) * m);
+    min_side = (float(min_side) * m);
     float cur_scale = 1.0f;
     const float factor = 0.709f;
     float scale;
 
+    int factour_count = 0;
+
+    std::cout << "min_side " << min_side << std::endl;
+    std::cout << "m " << m << std::endl;
     while (min_side >= 12) {
         scale = m * cur_scale;
         cur_scale = cur_scale * factor;
         min_side *= factor;
+        factour_count++;
 
         int hs = int(std::ceil(height_ * scale));
         int ws = int(std::ceil(width_ * scale));
-        stage_size_.push_back(cv::Size(ws, hs));
+        stage_size_.push_back(cv::Size(hs, ws));
         Debug(("Create Pnet stage hs/ws " + std::to_string(hs) + "/" + std::to_string(ws)));
-        pnet_stages_.push_back(std::make_shared<Pnet>(this->graph_, this->sess_, hs, ws, scale));
+        pnet_stages_.push_back(std::make_shared<Pnet>(this->graph_, this->sess_, ws, hs, scale));
         pnet_stages_.at(pnet_stages_.size()-1)->Init();
     }
 
@@ -120,10 +125,12 @@ bool FaceDetector::LoadGraph(std::string const filename) {
 void FaceDetector::ProcessP(cv::Mat &fx3_image) {
     cv::Mat fx3_image_resized;
     total_pnet_boxes_.clear();
+    std::cout << "-----------------ProcessP " <<std::endl;
     for (int i = 0; i < stage_size_.size(); i++) {
         cv::resize(fx3_image, fx3_image_resized, stage_size_[i], 0, 0);
         pnet_stages_[i]->Process(fx3_image_resized);
         std::vector<FaceBox> istage_boxes = pnet_stages_[i].get()->final_candidate_boxes();
+        std::cout << "-->  " << i << " " << pnet_stages_[i].get()->final_candidate_boxes().size() <<std::endl;
         total_pnet_boxes_.insert(total_pnet_boxes_.end(), istage_boxes.begin(), istage_boxes.end());
     }
 }
@@ -134,43 +141,58 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
     float alpha = 0.0078125;
     float mean = 127.5;
 
+    std::cout << "FaceDetector::Process " << std::endl;
+
     u8x3_image.convertTo(fx3_image, CV_32FC3);
+    std::cout << "FaceDetector::Process1 " << std::endl;
     fx3_image = (fx3_image - mean) * alpha;
+    std::cout << "FaceDetector::Process2 " << std::endl;
     fx3_image = fx3_image.t();
+    std::cout << "FaceDetector::Process3 " << std::endl;
 
     std::vector<FaceBox> pnet_boxes;
     std::vector<FaceBox> rnet_boxes;
     std::vector<FaceBox> onet_boxes;
     ////////////////////////////////////
     //// PNET
+    std::cout << "FaceDetector::Process4 " << std::endl;
     ProcessP(fx3_image);
+    std::cout << "FaceDetector::Process5 " << std::endl;
     process_boxes(total_pnet_boxes_, height_, width_, pnet_boxes);
+    std::cout << "FaceDetector::Process6 " << std::endl;
     Debug(" --- pnet_boxes " + std::to_string(pnet_boxes.size()));
 
-    ///////////////////
-    /// RNET
-    rnet_->Process(fx3_image, pnet_boxes);
-    total_rnet_boxes_ = rnet_->final_boxes();
-    process_boxes(total_rnet_boxes_, height_, width_, rnet_boxes);
-    Debug(" --- rnet_boxes " + std::to_string(rnet_boxes.size()));
+//    ///////////////////
+//    /// RNET
+//    std::cout << "FaceDetector::Process7 " << std::endl;
+//    rnet_->Process(fx3_image, pnet_boxes);
+//    std::cout << "FaceDetector::Process8 " << std::endl;
+//    total_rnet_boxes_ = rnet_->final_boxes();
+//    process_boxes(total_rnet_boxes_, height_, width_, rnet_boxes);
+//    Debug(" --- rnet_boxes " + std::to_string(rnet_boxes.size()));
 
-    ///////////////////
-    /// ONET
-    onet_->Process(fx3_image, rnet_boxes);
-    total_onet_boxes_ = onet_->final_boxes();
+//    ///////////////////
+//    /// ONET
+//    ///
+//    std::cout << "FaceDetector::Process9 " << std::endl;
+//    onet_->Process(fx3_image, rnet_boxes);
+//    std::cout << "FaceDetector::Process10 " << std::endl;
+//    total_onet_boxes_ = onet_->final_boxes();
 
-    Debug(" --- onet_boxes " + std::to_string(total_onet_boxes_.size()));
-    for (unsigned int i = 0; i < total_onet_boxes_.size(); i++) {
-        FaceBox &box = total_onet_boxes_[i];
+//    Debug(" --- onet_boxes " + std::to_string(total_onet_boxes_.size()));
+//    std::cout << "FaceDetector::Process11 " + std::to_string(total_onet_boxes_.size())<< std::endl;
 
-        float h = box.x1 - box.x0 + 1;
-        float w = box.y1 - box.y0 + 1;
+//    for (unsigned int i = 0; i < total_onet_boxes_.size(); i++) {
+//        FaceBox &box = total_onet_boxes_[i];
 
-        for (int j = 0; j < 5; j++) {
-            box.landmark.x[j] = box.x0 + w * box.landmark.x[j] - 1;
-            box.landmark.y[j] = box.y0 + h * box.landmark.y[j] - 1;
-        }
-    }
+//        float h = box.x1 - box.x0 + 1;
+//        float w = box.y1 - box.y0 + 1;
+
+//        for (int j = 0; j < 5; j++) {
+//            box.landmark.x[j] = box.x0 + w * box.landmark.x[j] - 1;
+//            box.landmark.y[j] = box.y0 + h * box.landmark.y[j] - 1;
+//        }
+//    }
 
     // Get Final Result
     face_list_.clear();
@@ -185,32 +207,34 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
         }
     }
 
-#ifdef USEDEBUG
+//#ifdef USEDEBUG
 
     for (auto f : pnet_boxes) {
-        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+//        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+        cv::Rect r(f.py0, f.px0, f.py1 - f.py0, f.px1 - f.px0);
+
         cv::rectangle(u8x3_image, r, cv::Scalar(255, 0, 0), 2);
     }
 
-    for (auto f : rnet_boxes) {
-        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 255), 2);
-    }
+//    for (auto f : rnet_boxes) {
+//        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+//        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 255), 2);
+//    }
 
-    for (auto f : face_list_) {
-        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
-        for (int j = 0; j < 5; j++) {
-            cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
-                       cv::Scalar(0, 0, 255), 5);
+//    for (auto f : face_list_) {
+//        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+//        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
+//        for (int j = 0; j < 5; j++) {
+//            cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
+//                       cv::Scalar(0, 0, 255), 5);
 
-            std::cout << "landmark " << j << " " << cv::Point(f.landmark.x[j], f.landmark.y[j]) << std::endl;
-        }
-    }
+//            std::cout << "landmark " << j << " " << cv::Point(f.landmark.x[j], f.landmark.y[j]) << std::endl;
+//        }
+//    }
 
     cv::namedWindow("rects ", cv::WINDOW_NORMAL);
     cv::imshow("rects ", u8x3_image);
     cv::waitKey(-1);
-#endif
+//#endif
 }
 
