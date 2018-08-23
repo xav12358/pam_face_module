@@ -43,7 +43,7 @@ void Onet::Process(cv::Mat &img, std::vector<FaceBox> &rnet_candidates) {
 
     int patch_size = kWidth_ * kHeight_ * 3;
     for (size_t i = 0; i < rnet_candidates.size(); i++) {
-        copy_one_patch_inv(img, rnet_candidates[i], input_data, kHeight_, kWidth_);
+        copy_one_patch(img, rnet_candidates[i], input_data, kHeight_, kWidth_);
         input_data += patch_size;
     }
 

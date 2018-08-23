@@ -47,7 +47,7 @@ class Rnet : public Net{
     /// \param img
     /// \param pnet_candidates
     ///
-    void Process(cv::Mat &img, std::vector<FaceBox> & pnet_candidates);
+    void Process(cv::Mat &fx3_image, std::vector<FaceBox> & pnet_candidates);
 
 
     //////////////////////

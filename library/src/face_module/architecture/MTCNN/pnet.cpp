@@ -31,11 +31,7 @@ void Pnet::FetchData() {
 
     std::vector<FaceBox> candidate_boxes;
     GenerateBoundingBox(conf_data, conf_size, reg_data, scale_, kPnetThreshold, feature_h,
-                        feature_w, candidate_boxes, true);
-
-    std::cout << "candidate_boxes.size()  " << candidate_boxes .size() <<std::endl;
-
-
+                        feature_w, candidate_boxes , true);
     final_candidate_boxes_.clear();
     nms_boxes(candidate_boxes, 0.5, NMSType::kNMS_UNION, final_candidate_boxes_);
 }
@@ -113,16 +109,13 @@ bool Pnet::Init() {
 }
 
 void Pnet::Process(cv::Mat const &fx3_image) {
-    Debug(" >>>>> Pnet::Process ");
     FeedML(fx3_image);
 
     // run the session
     RunSession();
-    Debug(" >>>>> Pnet::Process2 ");
 
     // Fetch data
     FetchData();
-    Debug(" >>>>> Pnet::Process3  ");
 }
 
 void Pnet::RunSession() {

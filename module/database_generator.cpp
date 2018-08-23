@@ -27,7 +27,7 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
     video_capture->set(CV_CAP_PROP_FRAME_HEIGHT, 480 );
 
     bool complete = false;
-    cv::Mat u8x3_image = cv::imread("/home/xavier/Desktop/image.png");
+    cv::Mat u8x3_image = cv::imread("/home/xavier/Bureau/image.png");
 //    *video_capture >> u8x3_image;
 
     std::unique_ptr<FaceDetector> face_detector(
@@ -44,25 +44,25 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
     while (!complete) {
       // grab image
 //      *video_capture >> u8x3_image;
-        u8x3_image = cv::imread("/home/xavier/Desktop/image.png");
+        u8x3_image = cv::imread("/home/xavier/Bureau/image.png");
 
       // Detect the face in the current image
       face_detector->Process(u8x3_image);
       auto face_boxes = face_detector->face_list();
 
-      // For each face box align it and exact the warped region
-      for (auto f : face_boxes) {
-        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
-        for (int j = 0; j < 5; j++) {
-          cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]),
-                     10, cv::Scalar(0, 0, 255), 5);
-          std::cout << "landmark " << j << " "
-                    << cv::Point(f.landmark.x[j], f.landmark.y[j]) << std::endl;
-        }
-      }
+//      // For each face box align it and exact the warped region
+//      for (auto f : face_boxes) {
+//        cv::Rect r(f.px0, f.py0, f.px1 - f.px0, f.py1 - f.py0);
+//        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
+//        for (int j = 0; j < 5; j++) {
+//          cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]),
+//                     10, cv::Scalar(0, 0, 255), 5);
+//          std::cout << "landmark " << j << " "
+//                    << cv::Point(f.landmark.x[j], f.landmark.y[j]) << std::endl;
+//        }
+//      }
 
-      std::cout << "lalal" << u8x3_image.empty() << std::endl;
+//      std::cout << "lalal" << u8x3_image.empty() << std::endl;
       cv::imshow("facedetector", u8x3_image);
       cv::waitKey(10);
     }
