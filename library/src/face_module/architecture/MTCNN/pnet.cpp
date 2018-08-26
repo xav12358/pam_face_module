@@ -28,12 +28,9 @@ void Pnet::FetchData() {
     int feature_w = int(TF_Dim(run_output_tensors_[0], 2));
 
     int64_t conf_size = feature_h * feature_w * 2;
-
-    std::vector<FaceBox> candidate_boxes;
-    GenerateBoundingBox(conf_data, conf_size, reg_data, scale_, kPnetThreshold, feature_h,
-                        feature_w, candidate_boxes , true);
     final_candidate_boxes_.clear();
-    nms_boxes(candidate_boxes, 0.5, NMSType::kNMS_UNION, final_candidate_boxes_);
+    GenerateBoundingBox(conf_data, conf_size, reg_data, scale_, kPnetThreshold, feature_h,
+                        feature_w, final_candidate_boxes_ , true);
 }
 
 void Pnet::GenerateBoundingBox(const float *confidence_data, int confidence_size,
@@ -61,7 +58,6 @@ void Pnet::GenerateBoundingBox(const float *confidence_data, int confidence_size
                 box.y0 = top_y;
                 box.x1 = bottom_x;
                 box.y1 = bottom_y;
-
                 box.score = score;
 
                 int c_offset = (img_w * 4) * y + 4 * x;
@@ -121,5 +117,5 @@ void Pnet::Process(cv::Mat const &fx3_image) {
 void Pnet::RunSession() {
     TF_SessionRun(sess_.get(),nullptr,run_inputs_,&run_inputs_tensors_[0], 1,
     run_outputs_, &run_output_tensors_[0], 2, NULL, 0, NULL, status_.get());
-    assert(TF_GetCode(s) == TF_OK);
+    assert(TF_GetCode(status_.get()) == TF_OK);
 }

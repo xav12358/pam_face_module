@@ -83,11 +83,6 @@ void Onet::Process(cv::Mat &img, std::vector<FaceBox> &rnet_candidates) {
             output_box.x1 = input_box.x1;
             output_box.y1 = input_box.y1;
 
-            output_box.px0 = input_box.px0;
-            output_box.py0 = input_box.py0;
-            output_box.px1 = input_box.px1;
-            output_box.py1 = input_box.py1;
-
             output_box.score = conf_data[1];
 
             output_box.regress[0] = reg_data[1];
