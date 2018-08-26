@@ -120,4 +120,11 @@ void FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
   }
 
   TF_DeleteTensor(run_output_tensors_[0]);
+
+#ifdef USEDEBUG
+  for(auto feature: image_features){
+      std::cout << "image_features " << feature << std::endl;
+  }
+
+#endif
 }

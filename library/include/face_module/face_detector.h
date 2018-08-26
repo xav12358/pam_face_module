@@ -50,7 +50,7 @@ public:
   /// \brief Process
   /// \param u8x3_image
   ///
-  void Process(cv::Mat &u8x3_image);
+  void Process(cv::Mat u8x3_image);
 
   std::vector<FaceBox> total_pnet_boxes() const;
 

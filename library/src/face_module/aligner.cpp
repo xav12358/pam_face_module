@@ -17,10 +17,9 @@ std::vector<cv::Mat> Aligner::dewarped_images() const {
   return dewarped_images_;
 }
 
-cv::Mat
-Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
-                       const std::vector<cv::Point2f> output_features,
-                       float desired_size) {
+cv::Mat Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
+                               const std::vector<cv::Point2f> output_features,
+                               float desired_size) {
   Eigen::Matrix2f cov = Eigen::Matrix2f::Zero(2, 2);
 
   cv::Point2f input_mean(0, 0), output_mean(0, 0);
@@ -88,26 +87,25 @@ Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
 
   Eigen::MatrixXf trans_m = c * R;
 
-  float angle = 180.0 / M_PI * std::atan2(trans_m(0,1), trans_m(0,0));
-  float scale = (trans_m.block<1,2>(0,0)).norm();
+  float angle = -180.0 / M_PI * std::atan2(trans_m(0, 1), trans_m(0, 0));
+  float scale = (trans_m.block<1, 2>(0, 0)).norm();
 
-  Eigen::MatrixXf input_center(2,1);
-  input_center(0,0) = (input_features[0].x + input_features[1].x) /2.0;
-  input_center(1,0) = (input_features[0].y + input_features[1].y) /2.0;
+  Eigen::MatrixXf input_center(2, 1);
+  input_center(0, 0) = (input_features[0].x + input_features[1].x) / 2.0;
+  input_center(1, 0) = (input_features[0].y + input_features[1].y) / 2.0;
 
-  Eigen::MatrixXf output_center(2,1);
-  output_center(0,0) = desired_size * 0.5f;
-  output_center(1,0) = desired_size * 0.4f;
+  Eigen::MatrixXf output_center(2, 1);
+  output_center(0, 0) = desired_size * 0.5f;
+  output_center(1, 0) = desired_size * 0.4f;
 
   Eigen::MatrixXf e_xy = output_center - input_center;
-  cv::Mat rot = cv::getRotationMatrix2D(cv::Point2f(input_center(0,0), input_center(1,0)),angle, scale);
+  cv::Mat rot = cv::getRotationMatrix2D(
+      cv::Point2f(input_center(0, 0), input_center(1, 0)), angle, scale);
 
-  rot.at<double>(0,2) +=  e_xy(0,0);
-  rot.at<double>(1,2) +=  e_xy(1,0);
+  rot.at<double>(0, 2) += e_xy(0, 0);
+  rot.at<double>(1, 2) += e_xy(1, 0);
 
   return rot;
-
-
 }
 
 void Aligner::ProcessExtractFeatures(
@@ -132,25 +130,40 @@ void Aligner::ProcessExtractFeatures(
   // Extract transformation from the reference landmarks positions
   image_transformations_.clear();
   for (auto l : landmarks) {
-    image_transformations_.push_back(FindTransform( l, input_features, image_size));
+    image_transformations_.push_back(
+        FindTransform(l, input_features, image_size));
   }
 }
 
-std::vector<cv::Mat> Aligner::ProcessExtractImages(const cv::Mat &u8x1_image,
-                                   const std::vector<std::vector<cv::Point2f>> landmarks) {
+std::vector<cv::Mat>
+Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
+                              const std::vector<FaceBox> box_list) {
 
-    const int image_size = 160;
-    ProcessExtractFeatures(image_size, landmarks);
-
-    std::vector<cv::Mat> image_patch;
-    for (auto t_rot : image_transformations_) {
-        cv::Mat patch;
-        cv::warpAffine(u8x1_image,patch,t_rot,cv::Size(image_size,image_size));
-        cv::namedWindow("u8x1_image", cv::WINDOW_NORMAL);
-        cv::imshow("u8x1_image",u8x1_image);
-        cv::imshow("patch",patch);
-        cv::waitKey(-1);
+  std::vector<std::vector<cv::Point2f>> landmark_list;
+  for (auto box : box_list) {
+    std::vector<cv::Point2f> landmarks;
+    for (int i = 0; i < 5; i++) {
+      landmarks.push_back(cv::Point2f(box.landmark.x[i], box.landmark.y[i]));
     }
+    landmark_list.push_back(landmarks);
+  }
 
-    return image_patch;
+  const int image_size = 160;
+  ProcessExtractFeatures(image_size, landmark_list);
+
+  std::vector<cv::Mat> image_patch;
+  for (auto t_rot : image_transformations_) {
+    cv::Mat patch;
+    cv::warpAffine(u8x3_image, patch, t_rot, cv::Size(image_size, image_size));
+    image_patch.push_back(patch);
+  }
+
+#ifdef USEDEBUG
+//  cv::namedWindow("u8x1_image", cv::WINDOW_NORMAL);
+//  cv::imshow("u8x1_image", u8x1_image);
+//  cv::imshow("patch", patch);
+//  cv::waitKey(-1);
+#endif
+
+  return image_patch;
 }

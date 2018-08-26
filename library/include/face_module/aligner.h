@@ -4,6 +4,7 @@
 #include <eigen3/Eigen/Dense>
 #include <opencv2/opencv.hpp>
 
+#include "face_module/architecture/FaceNet/facenet.h"
 
 
 class Aligner {
@@ -38,8 +39,8 @@ public:
   /// \brief ProcessExtractImages Extract aligned images containing facebox
   /// \param fx1_image
   ///
-  std::vector<cv::Mat> ProcessExtractImages(const cv::Mat &u8x1_image,
-                            const std::vector<std::vector<cv::Point2f> > landmarks);
+  std::vector<cv::Mat> ProcessExtractImages(const cv::Mat u8x3_image,
+                            const std::vector<FaceBox> box_list);
 
 
 

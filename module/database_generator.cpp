@@ -11,6 +11,7 @@
 #include "face_module/face_detector.h"
 #include "face_module/feature_detector.h"
 #include "face_module/utils/parser.h"
+#include "face_module/aligner.h"
 
 void processCapture(std::string input_stream, std::string output_feature_folder,
                     std::string graph_MTCNN, std::string graph_FaceFeature) {
@@ -31,6 +32,9 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
     cv::Mat u8x3_image;
     *video_capture >> u8x3_image;
 
+    ///////////////////////////////////////////
+    /// Declare and init variables
+    ///
     std::unique_ptr<FaceDetector> face_detector(
         new FaceDetector(u8x3_image.rows, u8x3_image.cols, 80));
     if (!face_detector->Init(graph_MTCNN)) {
@@ -38,21 +42,38 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
       return;
     }
 
-    //    std::unique_ptr<FeatureDetector> feature_detector(new
-    //    FeatureDetector());
-    //    if (feature_detector->Init(graph_FaceFeature)) {
-    //      std::cerr << "Can't init the feature_detector" << std::endl;
-    //    }
+    std::unique_ptr<FeatureDetector> feature_detector(new
+                                                      FeatureDetector());
+    if (!feature_detector->Init(graph_FaceFeature)) {
+        std::cerr << "Can't init the feature_detector" << std::endl;
+    }
+
+    std::unique_ptr<Aligner> aligner( new Aligner());
+
+
+    //////////////////////////////////////
 
     while (!complete) {
       // grab image
       *video_capture >> u8x3_image;
       //        u8x3_image = cv::imread("/home/xavier/Bureau/image.png");
 
+
+
+
       // Detect the face in the current image
       face_detector->Process(u8x3_image);
       auto face_boxes = face_detector->face_list();
 
+      /// Aligne the detected facebox and extract patches
+      std::vector<cv::Mat> aligned_patches =  aligner->ProcessExtractImages(u8x3_image, face_boxes);
+
+
+
+
+      /////////////////////////////////////////////////////////////
+      /// Display results
+      /////////////////////////////////////////////////////////////
       // For each face box align it and exact the warped region
       for (auto f : face_boxes) {
         cv::Rect r(f.py0, f.px0, f.py1 - f.py0, f.px1 - f.px0);
@@ -60,15 +81,17 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
         for (int j = 0; j < 5; j++) {
           cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]),
                      10, cv::Scalar(0, 0, 255), 5);
-          //          std::cout << "landmark " << j << " "
-          //                    << cv::Point(f.landmark.x[j], f.landmark.y[j])
-          //                    << std::endl;
         }
       }
 
-      //      std::cout << "lalal" << u8x3_image.empty() << std::endl;
-      cv::imshow("facedetector", u8x3_image);
+      cv::imshow("Facedetector", u8x3_image);
       cv::waitKey(10);
+
+      int index_patch = 0;
+      for(auto patch: aligned_patches){
+          cv::imshow("Patch" + std::to_string(index_patch) , patch);
+          cv::waitKey(10);
+      }
     }
   }
 }
@@ -107,31 +130,6 @@ int main(int argc, char **argv) {
   std::string output_feature_folder = parsed_command["--output_folder"];
   std::string graph_MTCNN = parsed_command["--graph_MTCNN"];
   std::string graph_FaceFeature = parsed_command["--graph_FaceFeature"];
-  //  std::string input_stream = "0";
-  //  std::string output_feature_folder = "";
-  //  std::string graph_MTCNN = "/home/xavier/Desktop/developpement/Network/"
-  //                            "pam_face_module/test/data/graph/graph_MTCNN.pb";
-  //  std::string graph_FaceFeature =
-  //  "/home/xavier/Desktop/developpement/Network/"
-  //                                  "pam_face_module/test/data/graph/"
-  //                                  "graph_FaceFeature.pb";
-
-  //  cv::VideoCapture *video_capture = new cv::VideoCapture(0);
-
-  //  if (!video_capture->isOpened()) {
-  //      std::cerr << "Can't open camera " << 0 << std::endl;
-  //  }
-  ////  cv::Mat input_image =
-  /// cv::imread("../../pam_face_module/test/data/warped_images/chips0.png");
-
-  //  while(1) {
-  //      cv::Mat u8x3_image;
-
-  //      *video_capture >> u8x3_image;
-  //      std::cout << "lalal"<< u8x3_image.empty() << std::endl;
-  //      cv::imshow("facedetector", u8x3_image);
-  //      cv::waitKey(100);
-  //  }
 
   processCapture(input_stream, output_feature_folder, graph_MTCNN,
                  graph_FaceFeature);

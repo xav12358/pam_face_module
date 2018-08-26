@@ -133,7 +133,7 @@ void FaceDetector::ProcessP(cv::Mat &fx3_image) {
     }
 }
 
-void FaceDetector::Process(cv::Mat &u8x3_image) {
+void FaceDetector::Process(cv::Mat u8x3_image) {
     Debug(" >>>> FaceDetector::Process");
     cv::Mat fx3_image;
     float alpha = 0.0078125;
@@ -196,34 +196,31 @@ void FaceDetector::Process(cv::Mat &u8x3_image) {
 
 
 #ifdef USEDEBUG
-
-  /*  for (auto f : pnet_boxes) {
+    cv::Mat u8x3_image_copy;
+    u8x3_image.copyTo(u8x3_image_copy);
+    for (auto f : pnet_boxes) {
         cv::Rect r(f.py0, f.px0, f.py1 - f.py0, f.px1 - f.px0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(255, 0, 0), 2);
+        cv::rectangle(u8x3_image_copy, r, cv::Scalar(255, 0, 0), 2);
     }
 
     for (auto f : rnet_boxes) {
         cv::Rect r(f.py0, f.px0, f.py1 - f.py0, f.px1 - f.px0);
-        cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 255), 2);
-    }*/
+        cv::rectangle(u8x3_image_copy, r, cv::Scalar(0, 255, 255), 2);
+    }
 
     int i = 0;
     for (auto f : face_list_) {
         cv::Rect r(f.py0, f.px0, f.py1 - f.py0, f.px1 - f.px0);
         cv::rectangle(u8x3_image, r, cv::Scalar(0, 255, 0), 2);
-        std::cout << "////////////////////// "  << std::endl;
-        std::cout << " " << cv::Point(f.px0, f .py0)
-                  << cv::Point(f.px1, f.py1) << std::endl;
-
         for (int j = 0; j < 5; j++) {
-            cv::circle(u8x3_image, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
+            cv::circle(u8x3_image_copy, cv::Point(f.landmark.x[j], f.landmark.y[j]), 10,
                        cv::Scalar(0, 0, i*10), 5);
         }
         i++;
     }
 
     cv::namedWindow("rects ", cv::WINDOW_NORMAL);
-    cv::imshow("rects ", u8x3_image);
+    cv::imshow("rects ", u8x3_image_copy);
     cv::waitKey(-1);
 #endif
 }
