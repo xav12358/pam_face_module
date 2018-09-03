@@ -8,10 +8,19 @@
 #include <opencv2/opencv.hpp>
 #include <tensorflow/c/c_api.h>
 
+#include "face_module/aligner.h"
 #include "face_module/face_detector.h"
 #include "face_module/feature_detector.h"
 #include "face_module/utils/parser.h"
-#include "face_module/aligner.h"
+
+bool checkIsComplete(std::unordered_map<std::string, std::vector<cv::Mat>> database) {
+    for(auto d: database){
+        if(d.second.size() == 0){
+            return false;
+        }
+    }
+    return true;
+}
 
 void processCapture(std::string input_stream, std::string output_feature_folder,
                     std::string graph_MTCNN, std::string graph_FaceFeature) {
@@ -42,35 +51,37 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
       return;
     }
 
-    std::unique_ptr<FeatureDetector> feature_detector(new
-                                                      FeatureDetector());
+    std::unique_ptr<FeatureDetector> feature_detector(new FeatureDetector());
     if (!feature_detector->Init(graph_FaceFeature)) {
-        std::cerr << "Can't init the feature_detector" << std::endl;
+      std::cerr << "Can't init the feature_detector" << std::endl;
     }
 
-    std::unique_ptr<Aligner> aligner( new Aligner());
-
+    std::unique_ptr<Aligner> aligner(new Aligner());
 
     //////////////////////////////////////
-
+    std::unordered_map<std::string, std::vector<cv::Mat>> data_patchs;
     while (!complete) {
       // grab image
       *video_capture >> u8x3_image;
       //        u8x3_image = cv::imread("/home/xavier/Bureau/image.png");
 
-
-
-
       // Detect the face in the current image
       face_detector->Process(u8x3_image);
       auto face_boxes = face_detector->face_list();
 
+      // Normally it must have only one face detected in the image during
+      // the creation of user database's features.
+      //assert(face_boxes.size() <= 1);
+
+      if(face_boxes.size()== 0 || face_boxes.size() > 1)
+          continue;
       /// Aligne the detected facebox and extract patches
-      std::vector<cv::Mat> aligned_patches =  aligner->ProcessExtractImages(u8x3_image, face_boxes);
+      auto aligned_patches_and_orientations =
+          aligner->ProcessExtractImages(u8x3_image, face_boxes);
 
-
-
-
+      // Add current detected frame to the user's database
+      auto aligned_patch = aligned_patches_and_orientations.at(0);
+//      data_patchs[aligned_patch.second].push_back(aligned_patch.first);
       /////////////////////////////////////////////////////////////
       /// Display results
       /////////////////////////////////////////////////////////////
@@ -85,13 +96,28 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
       }
 
       cv::imshow("Facedetector", u8x3_image);
-      cv::waitKey(10);
+//      cv::waitKey(10);
 
       int index_patch = 0;
-      for(auto patch: aligned_patches){
-          cv::imshow("Patch" + std::to_string(index_patch) , patch);
-          cv::waitKey(10);
+      for (auto patch : aligned_patches_and_orientations) {
+        cv::imshow("Patch" + std::to_string(index_patch), patch.first);
+        cv::waitKey(10);
       }
+
+
+//      std::cout << " patch  "
+//                << face_boxes.at(0).landmark.y[0] << " "
+//                << face_boxes.at(0).landmark.y[1] << " "
+//                << face_boxes.at(0).landmark.y[2] << " "
+//                << face_boxes.at(0).landmark.y[3] << " "
+//                << face_boxes.at(0).landmark.y[4] << " "<< std::endl;
+
+
+//      std::cout << " --- Patchs alignement " << std::endl;
+      for (auto patch : aligned_patches_and_orientations) {
+                  std::cout << " patch  " << patch.second << std::endl;
+      }
+      //             complete = checkIsComplete(data_patchs);
     }
   }
 }

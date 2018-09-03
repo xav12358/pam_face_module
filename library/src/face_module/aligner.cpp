@@ -9,13 +9,14 @@ Eigen::MatrixXf cv2E(cv::Point2f p) {
   return ret;
 }
 
-std::vector<cv::Mat> Aligner::image_transformations() const {
-  return image_transformations_;
-}
+// std::vector<cv::Mat> Aligner::image_transformations() const {
+//  return image_transformations_;
+//}
 
-std::vector<cv::Mat> Aligner::dewarped_images() const {
-  return dewarped_images_;
-}
+// std::vector<std::pair<cv::Mat, Aligner::FacePosition>>
+// Aligner::dewarped_images() const {
+//  return dewarped_images_;
+//}
 
 cv::Mat Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
                                const std::vector<cv::Point2f> output_features,
@@ -108,7 +109,69 @@ cv::Mat Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
   return rot;
 }
 
-void Aligner::ProcessExtractFeatures(
+std::string Aligner::GetPosition(const std::vector<cv::Point2f> landmarks) {
+
+  float y0 = (landmarks[0].y + landmarks[1].y) / 2;
+  float y1 = landmarks[2].y;
+  float y2 = (landmarks[3].y + landmarks[4].y) / 2;
+
+  //    if (fabs((y0 - y1) / (y1 - y2)) > 1.35  ) {
+  //      // Bottom
+  //      return toString(BOTTOM_RIGHT);
+  //    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+  //      // Top
+  //      return toString(TOP_RIGHT);
+  //    } else {
+  //      // Center V
+  //      return toString(VCENTER_RIGHT);
+  //    }
+
+
+
+  if ((fabs(landmarks[0].x - landmarks[2].x) /
+       fabs(landmarks[1].x - landmarks[2].x)) > 2) {
+    // Right H
+    if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+      // Bottom
+      return toString(BOTTOM_RIGHT);
+    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+      // Top
+      return toString(TOP_RIGHT);
+    } else {
+      // Center V
+      return toString(VCENTER_RIGHT);
+    }
+  } else if ((fabs(landmarks[1].x - landmarks[2].x) /
+                  fabs(landmarks[0].x - landmarks[2].x) >
+              2)) {
+    // LEFT H
+    if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+      // Bottom
+      return toString(BOTTOM_LEFT);
+    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+      // Top
+      return toString(TOP_LEFT);
+    } else {
+      // Center V
+      return toString(VCENTER_LEFT);
+    }
+  } else {
+    // Center H
+      if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+        // Bottom
+        return toString(BOTTOM_HCENTER);
+      } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+        // Top
+        return toString(TOP_HCENTER);
+      } else {
+        // Center V
+        return toString(VCENTER_HCENTER);
+      }
+  }
+
+}
+
+std::vector<cv::Mat> Aligner::ProcessExtractFeatures(
     float image_size, const std::vector<std::vector<cv::Point2f>> landmarks) {
   // Face features
   const float kMeanFaceShape_x[5] = {0.224152, 0.75610125, 0.490127, 0.254149,
@@ -128,14 +191,15 @@ void Aligner::ProcessExtractFeatures(
   }
 
   // Extract transformation from the reference landmarks positions
-  image_transformations_.clear();
+  std::vector<cv::Mat> image_transformations;
   for (auto l : landmarks) {
-    image_transformations_.push_back(
+    image_transformations.push_back(
         FindTransform(l, input_features, image_size));
   }
+  return image_transformations;
 }
 
-std::vector<cv::Mat>
+std::vector<std::pair<cv::Mat, std::string>>
 Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
                               const std::vector<FaceBox> box_list) {
 
@@ -149,13 +213,20 @@ Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
   }
 
   const int image_size = 160;
-  ProcessExtractFeatures(image_size, landmark_list);
+  auto image_transformations =
+      ProcessExtractFeatures(image_size, landmark_list);
 
-  std::vector<cv::Mat> image_patch;
-  for (auto t_rot : image_transformations_) {
+  // Get warped images
+  std::vector<std::pair<cv::Mat, std::string>> image_patch_and_orientation;
+  for (auto t_rot : image_transformations) {
     cv::Mat patch;
     cv::warpAffine(u8x3_image, patch, t_rot, cv::Size(image_size, image_size));
-    image_patch.push_back(patch);
+    image_patch_and_orientation.push_back(
+        std::pair<cv::Mat, std::string>(patch, "NONE"));
+  }
+
+  for (int i = 0; i < box_list.size(); i++) {
+    image_patch_and_orientation.at(i).second = GetPosition(landmark_list[i]);
   }
 
 #ifdef USEDEBUG
@@ -165,5 +236,5 @@ Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
 //  cv::waitKey(-1);
 #endif
 
-  return image_patch;
+  return image_patch_and_orientation;
 }
