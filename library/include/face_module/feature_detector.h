@@ -38,7 +38,7 @@ public:
   /// \brief Process
   /// \param
   ///
-  void Process(std::vector<cv::Mat> &image_candidates);
+  std::vector<Eigen::MatrixXf> Process(std::vector<cv::Mat> &image_candidates);
 
 };
 

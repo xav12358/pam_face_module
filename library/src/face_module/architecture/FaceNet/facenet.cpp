@@ -73,7 +73,7 @@ bool FaceNet::Init() {
   return is_init_;
 }
 
-void FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
+std::vector<Eigen::MatrixXf> FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
   Debug(" >>>>> FaceRecognition::Process ");
   int batch = int(image_candidates.size());
 
@@ -107,7 +107,9 @@ void FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
   if (TF_GetCode(status_.get()) != TF_OK) {
     std::cerr << "ERROR: Unable to run output_op: "
               << std::string(TF_Message(status_.get())) << std::endl;
-    return;
+    std::vector<Eigen::MatrixXf> empty_vector;
+    empty_vector.push_back(Eigen::MatrixXf::Zero(128, 1));
+    return empty_vector;
   }
 
   /*retrieval the forward results*/
@@ -117,6 +119,7 @@ void FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
 
   for(int i=0;i<batch;i++){
       image_features.push_back(  Eigen::Map<Eigen::Matrix<float,128, 1>>(feature_data));
+      feature_data+=128;
   }
 
   TF_DeleteTensor(run_output_tensors_[0]);
@@ -127,4 +130,6 @@ void FaceNet::Process(std::vector<cv::Mat> &image_candidates) {
   }
 
 #endif
+
+  return image_features;
 }

@@ -15,6 +15,7 @@ class Aligner {
 public:    
     typedef enum {
         NONE,
+        // Full face orientation list
         TOP_LEFT,
         TOP_HCENTER,
         TOP_RIGHT,
@@ -24,7 +25,17 @@ public:
         BOTTOM_LEFT,
         BOTTOM_HCENTER,
         BOTTOM_RIGHT,
+
+        //Small face orientation list
+        LEFT,
+        CENTER,
+        RIGHT
     }FaceOrientation;
+
+    typedef enum {
+        FULL_ORIENTATION,
+        SMALL_ORIENTATION
+    }FaceOrientationType;
 
     Aligner() {}
 
@@ -62,6 +73,17 @@ public:
         case BOTTOM_RIGHT:
             return "BOTTOM_RIGHT";
             break;
+
+
+        case LEFT:
+            return "LEFT";
+            break;
+        case CENTER:
+            return "CENTER";
+            break;
+        case RIGHT:
+            return "RIGHT";
+            break;
         }
     }
 
@@ -79,7 +101,7 @@ public:
   /////////////
   /// \brief GetPosition
   ///
-  std::string GetPosition(const std::vector<cv::Point2f> landmarks);
+  std::string GetPosition(const std::vector<cv::Point2f> landmarks, FaceOrientationType orientation_type);
 
   ///////////////////
   /// \brief ProcessExtractFeatures Extract features transfrmation for each facebox
@@ -94,7 +116,7 @@ public:
   /// \param fx1_image
   ///
   std::vector<std::pair<cv::Mat, std::string> > ProcessExtractImages(const cv::Mat u8x3_image,
-                            const std::vector<FaceBox> box_list);
+                            const std::vector<FaceBox> box_list, FaceOrientationType orientation_type);
 
 
 

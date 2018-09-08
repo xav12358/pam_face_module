@@ -32,10 +32,10 @@ cv::Mat FeatureDetector::Normalize(cv::Mat u8x3_Image) {
   return fx3_Image;
 }
 
-void FeatureDetector::Process(std::vector<cv::Mat> &image_candidates) {
+std::vector<Eigen::MatrixXf> FeatureDetector::Process(std::vector<cv::Mat> &image_candidates) {
   std::vector<cv::Mat> normalized_images;
   for (auto image : image_candidates) {
     normalized_images.push_back(Normalize(image));
   }
-  facenet_->Process(normalized_images);
+  return facenet_->Process(normalized_images);
 }

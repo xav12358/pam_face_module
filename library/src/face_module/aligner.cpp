@@ -109,66 +109,74 @@ cv::Mat Aligner::FindTransform(const std::vector<cv::Point2f> input_features,
   return rot;
 }
 
-std::string Aligner::GetPosition(const std::vector<cv::Point2f> landmarks) {
+std::string Aligner::GetPosition(const std::vector<cv::Point2f> landmarks,
+                                 FaceOrientationType orientation_type) {
+  switch (orientation_type) {
+  case FULL_ORIENTATION:
+  {
+      float y0 = (landmarks[0].y + landmarks[1].y) / 2;
+      float y1 = landmarks[2].y;
+      float y2 = (landmarks[3].y + landmarks[4].y) / 2;
 
-  float y0 = (landmarks[0].y + landmarks[1].y) / 2;
-  float y1 = landmarks[2].y;
-  float y2 = (landmarks[3].y + landmarks[4].y) / 2;
-
-  //    if (fabs((y0 - y1) / (y1 - y2)) > 1.35  ) {
-  //      // Bottom
-  //      return toString(BOTTOM_RIGHT);
-  //    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
-  //      // Top
-  //      return toString(TOP_RIGHT);
-  //    } else {
-  //      // Center V
-  //      return toString(VCENTER_RIGHT);
-  //    }
-
-
-
-  if ((fabs(landmarks[0].x - landmarks[2].x) /
-       fabs(landmarks[1].x - landmarks[2].x)) > 2) {
-    // Right H
-    if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
-      // Bottom
-      return toString(BOTTOM_RIGHT);
-    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
-      // Top
-      return toString(TOP_RIGHT);
-    } else {
-      // Center V
-      return toString(VCENTER_RIGHT);
-    }
-  } else if ((fabs(landmarks[1].x - landmarks[2].x) /
-                  fabs(landmarks[0].x - landmarks[2].x) >
-              2)) {
-    // LEFT H
-    if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
-      // Bottom
-      return toString(BOTTOM_LEFT);
-    } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
-      // Top
-      return toString(TOP_LEFT);
-    } else {
-      // Center V
-      return toString(VCENTER_LEFT);
-    }
-  } else {
-    // Center H
-      if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
-        // Bottom
-        return toString(BOTTOM_HCENTER);
-      } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
-        // Top
-        return toString(TOP_HCENTER);
+      if ((fabs(landmarks[0].x - landmarks[2].x) /
+           fabs(landmarks[1].x - landmarks[2].x)) > 2) {
+        // Right H
+        if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+          // Bottom
+          return toString(BOTTOM_RIGHT);
+        } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+          // Top
+          return toString(TOP_RIGHT);
+        } else {
+          // Center V
+          return toString(VCENTER_RIGHT);
+        }
+      } else if ((fabs(landmarks[1].x - landmarks[2].x) /
+                      fabs(landmarks[0].x - landmarks[2].x) >
+                  2)) {
+        // LEFT H
+        if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+          // Bottom
+          return toString(BOTTOM_LEFT);
+        } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+          // Top
+          return toString(TOP_LEFT);
+        } else {
+          // Center V
+          return toString(VCENTER_LEFT);
+        }
       } else {
-        // Center V
-        return toString(VCENTER_HCENTER);
+        // Center H
+          if (fabs((y0 - y1) / (y1 - y2)) > 1.35) {
+            // Bottom
+            return toString(BOTTOM_HCENTER);
+          } else if ((fabs(y1 - y0) / fabs(y1 - y2)) < 0.65) {
+            // Top
+            return toString(TOP_HCENTER);
+          } else {
+            // Center V
+            return toString(VCENTER_HCENTER);
+          }
       }
+      break;
   }
 
+  case SMALL_ORIENTATION:{
+      if ((fabs(landmarks[0].x - landmarks[2].x) /
+           fabs(landmarks[1].x - landmarks[2].x)) > 2) {
+        // Right
+          return toString(RIGHT);
+      } else if ((fabs(landmarks[1].x - landmarks[2].x) /
+                      fabs(landmarks[0].x - landmarks[2].x) > 2)) {
+        // LEFT
+          return toString(LEFT);
+      } else {
+        // Center
+          return toString(CENTER);
+      }
+      break;
+  }
+  }
 }
 
 std::vector<cv::Mat> Aligner::ProcessExtractFeatures(
@@ -201,7 +209,7 @@ std::vector<cv::Mat> Aligner::ProcessExtractFeatures(
 
 std::vector<std::pair<cv::Mat, std::string>>
 Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
-                              const std::vector<FaceBox> box_list) {
+                              const std::vector<FaceBox> box_list, FaceOrientationType orientation_type) {
 
   std::vector<std::vector<cv::Point2f>> landmark_list;
   for (auto box : box_list) {
@@ -226,7 +234,7 @@ Aligner::ProcessExtractImages(const cv::Mat u8x3_image,
   }
 
   for (int i = 0; i < box_list.size(); i++) {
-    image_patch_and_orientation.at(i).second = GetPosition(landmark_list[i]);
+    image_patch_and_orientation.at(i).second = GetPosition(landmark_list[i], orientation_type);
   }
 
 #ifdef USEDEBUG

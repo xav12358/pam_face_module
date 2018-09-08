@@ -13,16 +13,27 @@
 #include "face_module/feature_detector.h"
 #include "face_module/utils/parser.h"
 
-bool checkIsComplete(std::unordered_map<std::string, std::vector<cv::Mat>> database) {
-    for(auto d: database){
-        if(d.second.size() == 0){
-            return false;
-        }
+#define IMAGE_NUMBER 10
+bool CheckIsComplete(
+    std::unordered_map<std::string, std::vector<cv::Mat>> &database) {
+  for (auto d : database) {
+    if (d.second.size() < IMAGE_NUMBER) {
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
-void processCapture(std::string input_stream, std::string output_feature_folder,
+Eigen::MatrixXf Mean(std::vector<Eigen::MatrixXf> vectors){
+    Eigen::MatrixXf mean_vector(128, 1);
+    for(auto vector: vectors){
+        mean_vector += vector;
+    }
+    mean_vector /= vectors.size();
+    return mean_vector;
+}
+
+void ProcessCapture(std::string input_stream, std::string output_feature_folder,
                     std::string graph_MTCNN, std::string graph_FaceFeature) {
 
   if (IsNumber(input_stream)) {
@@ -60,6 +71,10 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
 
     //////////////////////////////////////
     std::unordered_map<std::string, std::vector<cv::Mat>> data_patchs;
+    data_patchs["LEFT"].clear();
+    data_patchs["CENTER"].clear();
+    data_patchs["RIGHT"].clear();
+
     while (!complete) {
       // grab image
       *video_capture >> u8x3_image;
@@ -71,17 +86,17 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
 
       // Normally it must have only one face detected in the image during
       // the creation of user database's features.
-      //assert(face_boxes.size() <= 1);
+      // assert(face_boxes.size() <= 1);
 
-      if(face_boxes.size()== 0 || face_boxes.size() > 1)
-          continue;
+      if (face_boxes.size() == 0 || face_boxes.size() > 1)
+        continue;
       /// Aligne the detected facebox and extract patches
-      auto aligned_patches_and_orientations =
-          aligner->ProcessExtractImages(u8x3_image, face_boxes);
+      auto aligned_patches_and_orientations = aligner->ProcessExtractImages(
+          u8x3_image, face_boxes, Aligner::SMALL_ORIENTATION);
 
       // Add current detected frame to the user's database
       auto aligned_patch = aligned_patches_and_orientations.at(0);
-//      data_patchs[aligned_patch.second].push_back(aligned_patch.first);
+      //      data_patchs[aligned_patch.second].push_back(aligned_patch.first);
       /////////////////////////////////////////////////////////////
       /// Display results
       /////////////////////////////////////////////////////////////
@@ -96,7 +111,7 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
       }
 
       cv::imshow("Facedetector", u8x3_image);
-//      cv::waitKey(10);
+      //      cv::waitKey(10);
 
       int index_patch = 0;
       for (auto patch : aligned_patches_and_orientations) {
@@ -104,20 +119,25 @@ void processCapture(std::string input_stream, std::string output_feature_folder,
         cv::waitKey(10);
       }
 
-
-//      std::cout << " patch  "
-//                << face_boxes.at(0).landmark.y[0] << " "
-//                << face_boxes.at(0).landmark.y[1] << " "
-//                << face_boxes.at(0).landmark.y[2] << " "
-//                << face_boxes.at(0).landmark.y[3] << " "
-//                << face_boxes.at(0).landmark.y[4] << " "<< std::endl;
-
-
-//      std::cout << " --- Patchs alignement " << std::endl;
+      //      std::cout << " --- Patchs alignement " << std::endl;
       for (auto patch : aligned_patches_and_orientations) {
-                  std::cout << " patch  " << patch.second << std::endl;
+        std::cout << " patch  " << patch.second << std::endl;
       }
-      //             complete = checkIsComplete(data_patchs);
+      complete = CheckIsComplete(data_patchs);
+    }
+
+    /////////////////////////////////////////
+    /// Generate feature file
+    ///
+    std::string user_name = "John";
+    std::unordered_map<std::string,
+                       std::unordered_map<std::string, Eigen::MatrixXf>>
+        feature_dataset;
+
+    std::unordered_map<std::string, Eigen::MatrixXf> user_dataset;
+    for (auto orientation : data_patchs) {
+      auto features = feature_detector->Process(orientation.second);
+      user_dataset[orientation.first] = Mean(features);
     }
   }
 }
@@ -157,7 +177,7 @@ int main(int argc, char **argv) {
   std::string graph_MTCNN = parsed_command["--graph_MTCNN"];
   std::string graph_FaceFeature = parsed_command["--graph_FaceFeature"];
 
-  processCapture(input_stream, output_feature_folder, graph_MTCNN,
+  ProcessCapture(input_stream, output_feature_folder, graph_MTCNN,
                  graph_FaceFeature);
 
   return 0;

@@ -36,7 +36,7 @@ public:
   }
 
   std::vector<std::pair<cv::Mat, std::string>>  Setup_ProcessExtractImages(cv::Mat u8x3_image, std::vector<FaceBox> facebox_list) {
-    return  aligner_->ProcessExtractImages(u8x3_image, facebox_list);
+    return  aligner_->ProcessExtractImages(u8x3_image, facebox_list, Aligner::SMALL_ORIENTATION);
   }
 
 protected:

@@ -123,14 +123,6 @@ TEST_F(Aligner_test, test_ProcessExtractImages) {
     cv::Mat input_image = cv::imread("../../pam_face_module/test/data/Face1.jpg");
     aligner_.reset(new Aligner());
 
-//    std::vector<cv::Point2f> landmarks;
-//    landmarks.push_back( cv::Point2f(827, 883));
-//    landmarks.push_back( cv::Point2f(1233, 878));
-//    landmarks.push_back( cv::Point2f(1018, 1123));
-//    landmarks.push_back( cv::Point2f(852, 1304));
-//    landmarks.push_back( cv::Point2f(1218, 1314));
-//    std::vector<std::vector<cv::Point2f>> landmarks_list;
-
     std::vector<FaceBox> facebox_list;
     FaceBox facebox;
     facebox.landmark.x[0] = 827;
@@ -176,12 +168,6 @@ TEST_F(Aligner_test, test_ProcessExtractImages) {
 //}
 
 int main(int argc, char **argv) {
-
-//    cv::Mat input_image = cv::imread("/home/xavier/Desktop/developpement/Network/pam_face_module/test/data/Face1.jpg");
-//    cv::imshow("input_image",input_image);
-//    cv::waitKey(-1);
-
-
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
