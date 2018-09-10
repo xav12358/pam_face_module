@@ -11,6 +11,7 @@
 #include "face_module/aligner.h"
 #include "face_module/face_detector.h"
 #include "face_module/feature_detector.h"
+#include "face_module/feature_manager.h"
 #include "face_module/utils/parser.h"
 
 #define IMAGE_NUMBER 10
@@ -24,17 +25,18 @@ bool CheckIsComplete(
   return true;
 }
 
-Eigen::MatrixXf Mean(std::vector<Eigen::MatrixXf> vectors){
-    Eigen::MatrixXf mean_vector(128, 1);
-    for(auto vector: vectors){
-        mean_vector += vector;
-    }
-    mean_vector /= vectors.size();
-    return mean_vector;
+Eigen::MatrixXf Mean(std::vector<Eigen::MatrixXf> vectors) {
+  Eigen::MatrixXf mean_vector(128, 1);
+  for (auto vector : vectors) {
+    mean_vector += vector;
+  }
+  mean_vector /= vectors.size();
+  return mean_vector;
 }
 
-void ProcessCapture(std::string input_stream, std::string output_feature_folder,
-                    std::string graph_MTCNN, std::string graph_FaceFeature) {
+void ProcessCapture(std::string input_stream, std::string output_filepath,
+                    std::string graph_MTCNN, std::string graph_FaceFeature,
+                    std::string user_name) {
 
   if (IsNumber(input_stream)) {
     int index_cam = std::stoi(input_stream, nullptr, 10);
@@ -129,7 +131,6 @@ void ProcessCapture(std::string input_stream, std::string output_feature_folder,
     /////////////////////////////////////////
     /// Generate feature file
     ///
-    std::string user_name = "John";
     std::unordered_map<std::string,
                        std::unordered_map<std::string, Eigen::MatrixXf>>
         feature_dataset;
@@ -139,6 +140,11 @@ void ProcessCapture(std::string input_stream, std::string output_feature_folder,
       auto features = feature_detector->Process(orientation.second);
       user_dataset[orientation.first] = Mean(features);
     }
+
+    feature_dataset[user_name] = user_dataset;
+
+    // Save the features in file
+    FeatureManager::Write(feature_dataset, output_filepath);
   }
 }
 
@@ -147,38 +153,39 @@ int main(int argc, char **argv) {
   std::unordered_map<std::string, std::string> parsed_command =
       ParseCommand(argc, argv);
 
-  for (auto p : parsed_command) {
-    std::cout << " p " << p.first << " " << p.second << std::endl;
-  }
-
   std::cout << "parsed_command.count(--input_stream) "
             << parsed_command.count("--input_stream") << std::endl;
-  std::cout << "parsed_command.count(--output_folder) "
-            << parsed_command.count("--output_folder") << std::endl;
+  std::cout << "parsed_command.count(--output_filepath) "
+            << parsed_command.count("--output_filepath") << std::endl;
   std::cout << "parsed_command.count(--graph_MTCNN) "
             << parsed_command.count("--graph_MTCNN") << std::endl;
   std::cout << "parsed_command.count(--graph_FaceFeature) "
             << parsed_command.count("--graph_FaceFeature") << std::endl;
+  std::cout << "parsed_command.count(--user_name) "
+            << parsed_command.count("--user_name") << std::endl;
   if (!(parsed_command.count("--input_stream") &&
-        parsed_command.count("--output_folder") &&
+        parsed_command.count("--output_filepath") &&
         parsed_command.count("--graph_MTCNN") &&
-        parsed_command.count("--graph_FaceFeature"))) {
+        parsed_command.count("--graph_FaceFeature") &&
+        parsed_command.count("--user_name"))) {
     std::cout << "Help command:" << std::endl
               << " database_generator "
                  "--input_stream index_cam"
-                 "--output_folder folder"
+                 "--output_filepath fileoutput"
                  "--graph_MTCNN graph_MTCNN.pb"
                  "--graph_FaceFeature graph_FaceFeature.pb"
+                 "--user_name user_name"
               << std::endl;
   }
 
   std::string input_stream = parsed_command["--input_stream"];
-  std::string output_feature_folder = parsed_command["--output_folder"];
+  std::string output_feature_folder = parsed_command["--output_filepath"];
   std::string graph_MTCNN = parsed_command["--graph_MTCNN"];
   std::string graph_FaceFeature = parsed_command["--graph_FaceFeature"];
+  std::string user_name = parsed_command["--user_name"];
 
   ProcessCapture(input_stream, output_feature_folder, graph_MTCNN,
-                 graph_FaceFeature);
+                 graph_FaceFeature, user_name);
 
   return 0;
 }

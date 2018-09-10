@@ -19,14 +19,16 @@ target_link_libraries("database_generator"
 
 
 
-#project("pam_module")
+project("pam_module")
 
-#add_definitions("-std=c++11")
+add_definitions("-std=c++11")
 
-#file(GLOB SOURCES  "pam_module.cpp")
-#file(GLOB HEADERS "")
+file(GLOB SOURCES  "pam_module.cpp")
+file(GLOB HEADERS "")
 
-#add_executable("pam_module" ${SOURCES} ${HEADERS})
-#target_link_libraries("pam_module"
-#    "face_module")
+add_library("pam_face_module" SHARED ${SOURCES} ${HEADERS})
+target_link_libraries("pam_face_module"
+    -lpam
+    -lpam_misc
+    "face_module")
 
